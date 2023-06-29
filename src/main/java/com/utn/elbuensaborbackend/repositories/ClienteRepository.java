@@ -35,5 +35,11 @@ public interface ClienteRepository extends BaseRepository<Cliente, Long> {
             "INNER JOIN Rol r ON u.rol_id = r.id_rol " +
             "WHERE c.nombre = :nombre AND c.apellido = :apellido", nativeQuery = true)
     List<Cliente> findAllClientesByNameAndApellido(@Param("nombre") String nombre, @Param("apellido") String apellido);
+
+
+    @Query(value = "SELECT cliente.* FROM cliente " +
+            "INNER JOIN pedido ON cliente.id_cliente = pedido.cliente_id " +
+            "WHERE pedido.id_pedido = :pedidoId", nativeQuery = true)
     Cliente findByPedidoId(@Param("pedidoId") Long pedidoId);
+
 }

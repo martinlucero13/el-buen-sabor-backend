@@ -1,10 +1,7 @@
 package com.utn.elbuensaborbackend.controllers;
 
-import com.utn.elbuensaborbackend.dtos.ArticuloManufacturadoDTO;
 import com.utn.elbuensaborbackend.dtos.PedidoDTO;
-import com.utn.elbuensaborbackend.entities.ArticuloManufacturado;
 import com.utn.elbuensaborbackend.entities.Pedido;
-import com.utn.elbuensaborbackend.services.ArticuloManufacturadoServiceImpl;
 import com.utn.elbuensaborbackend.services.PedidoServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/pedidos")
-public class PedidolController {
+public class PedidoController {
     @Autowired
     private PedidoServiceImpl service;
 
