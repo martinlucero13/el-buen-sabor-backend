@@ -16,7 +16,7 @@ import java.util.List;
 public class Pedido extends Base {
 
     @Column(name = "fecha")
-    @Temporal(TemporalType.TIME)
+    @Temporal(TemporalType.DATE)
     private Date fecha;
 
     @Column(name = "hora_estimada_fin")
