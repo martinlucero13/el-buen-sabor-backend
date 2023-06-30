@@ -10,7 +10,6 @@ public class DetallePedidoDTO {
     private Long id;
     private Integer cantidad;
     private Double subTotal;
-    private PedidoDTO pedido;
     private ArticuloManufacturadoDTO articuloManufacturado;
     private ArticuloInsumoDTO articuloInsumo;
 }

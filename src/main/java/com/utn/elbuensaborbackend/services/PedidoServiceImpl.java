@@ -87,13 +87,17 @@ public class PedidoServiceImpl implements PedidoService {
                 tipoPagoPedidoDTO.setDescripcion(tipoPagoPedido.getDescripcion());
 
 
-
                 pedidoDTO.setCliente(clienteDTO);
                 pedidoDTO.setTipoEntregaPedido(tipoEntregaPedidoDTO);
                 pedidoDTO.setTipoPagoPedido(tipoPagoPedidoDTO);
                 pedidoDTOs.add(pedidoDTO);
             }
 
+
+            for (PedidoDTO pro : pedidoDTOs) {
+                System.out.println(pro.getTipoEntregaPedido().getDescripcion());
+                System.out.println(pro.getTipoPagoPedido().getDescripcion());
+            }
             return pedidoDTOs;
         } catch (Exception e) {
             throw new Exception(e.getMessage());
