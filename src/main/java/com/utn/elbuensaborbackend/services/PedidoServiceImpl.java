@@ -57,7 +57,7 @@ public class PedidoServiceImpl implements PedidoService {
                 clienteDTO.setApellido(cliente.getApellido());
                 //????clienteDTO.getDomicilio(cliente.getDomicilio());
                 //Domicilio tabla asociada de cliente
-                Domicilio domicilio =
+                /*Domicilio domicilio =
                         domicilioRepository.findByClienteId(cliente.getId());
 
                 DomicilioDTO domicilioDTO =
@@ -67,7 +67,7 @@ public class PedidoServiceImpl implements PedidoService {
                 domicilioDTO.setNumero(domicilio.getNumero());
 
                 clienteDTO.setDomicilio(domicilioDTO);
-                clienteDTO.setTelefono(cliente.getTelefono());
+                clienteDTO.setTelefono(cliente.getTelefono());*/
                 //????clienteDTO.setUsuario(cliente.getUsuario());
 
                 //Tipo Entrega Pedido
@@ -127,7 +127,7 @@ public class PedidoServiceImpl implements PedidoService {
             clienteDTO.setTelefono(cliente.getTelefono());
 
             //Domicilio tabla asociada de cliente ver si esta bien, quizas solo tengo que indicar el id del cliente
-            Domicilio domicilio =
+            /*Domicilio domicilio =
                     domicilioRepository.findByClienteId(cliente.getId());
 
             DomicilioDTO domicilioDTO =
@@ -136,7 +136,7 @@ public class PedidoServiceImpl implements PedidoService {
             domicilioDTO.setCalle(domicilio.getCalle());
             domicilioDTO.setNumero(domicilio.getNumero());
 
-            clienteDTO.setDomicilio(domicilioDTO);
+            clienteDTO.setDomicilio(domicilioDTO);*/
 
             //????clienteDTO.setUsuario(cliente.getUsuario());
 
