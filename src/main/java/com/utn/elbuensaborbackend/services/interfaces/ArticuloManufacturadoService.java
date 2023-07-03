@@ -12,6 +12,8 @@ public interface ArticuloManufacturadoService {
 
     ArticuloManufacturadoDTO findById(Long id) throws  Exception;
 
+    ArticuloManufacturadoDTO findWithReceta(Long id) throws  Exception;
+
     List<ArticuloManufacturadoDTO> findByTermino(String termino) throws Exception;
 
     ArticuloManufacturado save(ArticuloManufacturadoDTO entity) throws Exception;

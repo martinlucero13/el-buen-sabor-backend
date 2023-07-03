@@ -24,8 +24,8 @@ public class ArticuloManufacturadoServiceImpl implements ArticuloManufacturadoSe
     @Autowired
     private RubroRepository rubroRepository;
 
-    /* @Autowired
-    private RecetaRepository recetaRepository;*/
+    @Autowired
+    private RecetaRepository recetaRepository;
 
     @Autowired
     private ArticuloManufacturadoPrecioVentaRepository articuloManufacturadoPrecioVentaRepository;
@@ -98,10 +98,13 @@ public class ArticuloManufacturadoServiceImpl implements ArticuloManufacturadoSe
             articuloManufacturadoDTO.setDescripcion(articuloManufacturado.getDescripcion());
             articuloManufacturadoDTO.setTiempoEstimadoCocina(articuloManufacturado.getTiempoEstimadoCocina());
 
-            /*Receta receta = recetaRepository.findByArticuloManufacturadoId(id);
-            RecetaDTO recetaDTO = new RecetaDTO();
-            recetaDTO.setId(receta.getId());
-            recetaDTO.setDescripcion(receta.getDescripcion());*/
+            /*if(recetaValidar){
+                Receta receta = recetaRepository.findByArticuloManufacturadoId(id);
+                RecetaDTO recetaDTO = new RecetaDTO();
+                recetaDTO.setId(receta.getId());
+                recetaDTO.setDescripcion(receta.getDescripcion());
+                articuloManufacturadoDTO.setReceta(recetaDTO);
+            }*/
 
             Rubro rubro =
                     rubroRepository.findByManufacturadoId(articuloManufacturado.getId());
@@ -127,7 +130,6 @@ public class ArticuloManufacturadoServiceImpl implements ArticuloManufacturadoSe
             articuloManufacturadoPrecioVentaDTO.setId(articuloManufacturadoPrecioVenta.getId());
             articuloManufacturadoPrecioVentaDTO.setFecha(articuloManufacturadoPrecioVenta.getFecha());
             articuloManufacturadoPrecioVentaDTO.setPrecioVenta(articuloManufacturadoPrecioVenta.getPrecioVenta());
-            //articuloManufacturadoDTO.setReceta(recetaDTO);
             articuloManufacturadoDTO.setImagen(imagenDTO);
             articuloManufacturadoDTO.setArticuloManufacturadoPrecioVenta(articuloManufacturadoPrecioVentaDTO);
 
@@ -135,6 +137,17 @@ public class ArticuloManufacturadoServiceImpl implements ArticuloManufacturadoSe
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
+    }
+
+    @Override
+    public ArticuloManufacturadoDTO findWithReceta(Long id) throws Exception {
+            ArticuloManufacturadoDTO articuloManufacturadoDTO = findById(id);
+            Receta receta = recetaRepository.findByArticuloManufacturadoId(id);
+            RecetaDTO recetaDTO = new RecetaDTO();
+            recetaDTO.setId(receta.getId());
+            recetaDTO.setDescripcion(receta.getDescripcion());
+            articuloManufacturadoDTO.setReceta(recetaDTO);
+            return articuloManufacturadoDTO;
     }
 
     @Override

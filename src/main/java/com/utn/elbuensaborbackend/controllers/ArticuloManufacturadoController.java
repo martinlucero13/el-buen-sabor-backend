@@ -38,6 +38,17 @@ public class ArticuloManufacturadoController {
         }
     }
 
+    @GetMapping("withReceta/{id}")
+    public ResponseEntity<?> getWithReceta(@PathVariable Long id) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(service.findWithReceta(id));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\":\"Error. No se pudieron recuperar los productos por termino\"}");
+        }
+    }
+
     @GetMapping("/byTermino/{termino}")
     public ResponseEntity<?> getByTermino(@PathVariable String termino) {
         try {

@@ -23,5 +23,5 @@ public class ArticuloManufacturadoDTO extends BaseDTO{
 
     private RubroDTO rubro;
 
-    //private RecetaDTO receta;
+    private RecetaDTO receta;
 }
