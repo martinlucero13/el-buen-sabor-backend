@@ -25,6 +25,17 @@ public class PedidoController {
         }
     }
 
+    @GetMapping("/byCliente/{id}")
+    public ResponseEntity<?> getByCliente(@PathVariable Long id) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(service.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\":\"Error. No se pudieron recuperar los pedidos por termino\"}");
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {

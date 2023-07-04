@@ -13,6 +13,8 @@ public interface PedidoService {
 
     List<PedidoDTO> findByTermino(String termino) throws Exception;
 
+    List<PedidoDTO> findByCliente(Long idCliente) throws Exception;
+
     Pedido save(PedidoDTO entity) throws Exception;
 
     Pedido update(Long id, PedidoDTO entity) throws Exception;

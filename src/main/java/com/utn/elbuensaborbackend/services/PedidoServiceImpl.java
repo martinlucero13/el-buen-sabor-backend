@@ -174,24 +174,8 @@ public class PedidoServiceImpl implements PedidoService {
             List<Pedido> pedidos = pedidoRepository.findByTermino(termino);
             List<PedidoDTO> pedidoDTOs = new ArrayList<>();
 
-            for (Pedido am : pedidos) {
-                PedidoDTO pedidoDTO = new PedidoDTO();
-                pedidoDTO.setId(am.getId());
-                pedidoDTO.setFecha(am.getFecha());
-                pedidoDTO.setHoraEstimadaFin(am.getHoraEstimadaFin());
-                pedidoDTO.setMontoDescuento(am.getMontoDescuento());
-
-                Cliente cliente = clienteRepository.findByPedidoId(am.getId());
-                ClienteDTO clienteDTO = new ClienteDTO();
-                clienteDTO.setId(cliente.getId());
-                clienteDTO.setNombre(cliente.getNombre());
-                clienteDTO.setApellido(cliente.getApellido());
-
-
-                //Hacer lo mismo de cliente con el resto de las columnas de la tabla pedido
-                pedidoDTO.setCliente(clienteDTO);
-
-
+            for (Pedido pedido : pedidos) {
+                PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
                 pedidoDTOs.add(pedidoDTO);
             }
 
@@ -199,6 +183,41 @@ public class PedidoServiceImpl implements PedidoService {
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
+    }
+
+    @Override
+    public List<PedidoDTO> findByCliente(Long idCliente) throws Exception {
+        try {
+            List<Pedido> pedidos = pedidoRepository.findByCliente(idCliente);
+            List<PedidoDTO> pedidoDTOs = new ArrayList<>();
+
+            for (Pedido pedido : pedidos) {
+                PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
+                pedidoDTOs.add(pedidoDTO);
+            }
+
+            return pedidoDTOs;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    private PedidoDTO mapPedidoToDTO(Pedido pedido) {
+        PedidoDTO pedidoDTO = new PedidoDTO();
+        pedidoDTO.setId(pedido.getId());
+        pedidoDTO.setFecha(pedido.getFecha());
+        pedidoDTO.setHoraEstimadaFin(pedido.getHoraEstimadaFin());
+        pedidoDTO.setMontoDescuento(pedido.getMontoDescuento());
+
+        Cliente cliente = clienteRepository.findByPedidoId(pedido.getId());
+        ClienteDTO clienteDTO = new ClienteDTO();
+        clienteDTO.setId(cliente.getId());
+        clienteDTO.setNombre(cliente.getNombre());
+        clienteDTO.setApellido(cliente.getApellido());
+
+        pedidoDTO.setCliente(clienteDTO);
+
+        return pedidoDTO;
     }
 
     @Override
