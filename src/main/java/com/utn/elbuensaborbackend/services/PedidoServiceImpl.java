@@ -43,7 +43,8 @@ public class PedidoServiceImpl implements PedidoService {
                 pedidoDTO.setFecha(am.getFecha());
                 pedidoDTO.setHoraEstimadaFin(am.getHoraEstimadaFin());
                 pedidoDTO.setMontoDescuento(am.getMontoDescuento());
-
+                pedidoDTO.setPagado(am.isPagado());
+                pedidoDTO.setEstado(am.getEstado());
 
 
 

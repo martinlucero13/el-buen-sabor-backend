@@ -26,6 +26,12 @@ public class Pedido extends Base {
     @Column(name = "monto_descuento")
     private Double montoDescuento;
 
+    @Column(name = "pagado")
+    private boolean pagado;
+
+    @Column(name = "estado")
+    private String estado;
+
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
