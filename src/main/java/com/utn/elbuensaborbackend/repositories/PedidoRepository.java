@@ -18,6 +18,11 @@ public interface PedidoRepository extends BaseRepository<Pedido, Long> {
     List<Pedido> findByTermino(@Param("termino") String termino);
 
     @Query(value = "SELECT pedido.* FROM pedido " +
+            "WHERE pedido.estado =:estado "
+            , nativeQuery = true)
+    List<Pedido> findByEstado(@Param("estado") String estado);
+
+    @Query(value = "SELECT pedido.* FROM pedido " +
             "WHERE pedido.cliente_id =:idCliente "
             , nativeQuery = true)
     List<Pedido> findByCliente(@Param("idCliente") Long idCliente);

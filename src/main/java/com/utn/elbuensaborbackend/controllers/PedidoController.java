@@ -58,6 +58,17 @@ public class PedidoController {
         }
     }
 
+    @GetMapping("/byEstado/{estado}")
+    public ResponseEntity<?> getByEstado(@PathVariable String estado) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(service.findByEstado(estado));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\":\"Error. No se pudieron recuperar los pedidos por termino\"}");
+        }
+    }
+
     @PostMapping("")
     public ResponseEntity<?> save(@RequestBody PedidoDTO entity) {
         try {

@@ -202,13 +202,46 @@ public class PedidoServiceImpl implements PedidoService {
         }
     }
 
+    @Override
+    public List<PedidoDTO> findByEstado(String estado) throws Exception {
+        try {
+            List<Pedido> pedidos = pedidoRepository.findByEstado(estado);
+            List<PedidoDTO> pedidoDTOs = new ArrayList<>();
+
+            for (Pedido pedido : pedidos) {
+                PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
+                pedidoDTOs.add(pedidoDTO);
+            }
+
+            return pedidoDTOs;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
     private PedidoDTO mapPedidoToDTO(Pedido pedido) {
         PedidoDTO pedidoDTO = new PedidoDTO();
         pedidoDTO.setId(pedido.getId());
         pedidoDTO.setFecha(pedido.getFecha());
         pedidoDTO.setHoraEstimadaFin(pedido.getHoraEstimadaFin());
         pedidoDTO.setMontoDescuento(pedido.getMontoDescuento());
+        pedidoDTO.setPagado(pedido.isPagado());
+        pedidoDTO.setEstado(pedido.getEstado());
 
+        TipoEntregaPedido tipoEntregaPedido = tipoEntregaPedidoRepository.findByPedidoId(pedido.getId());
+
+        TipoEntregaPedidoDTO tipoEntregaPedidoDTO = new TipoEntregaPedidoDTO();
+        tipoEntregaPedidoDTO.setId(tipoEntregaPedido.getId());
+        tipoEntregaPedidoDTO.setDescripcion(tipoEntregaPedido.getDescripcion());
+
+        TipoPagoPedido tipoPagoPedido = tipoPagoPedidoRepository.findByPedidoId(pedido.getId());
+
+        TipoPagoPedidoDTO tipoPagoPedidoDTO = new TipoPagoPedidoDTO();
+        tipoPagoPedidoDTO.setId(tipoPagoPedido.getId());
+        tipoPagoPedidoDTO.setDescripcion(tipoPagoPedido.getDescripcion());
+
+        pedidoDTO.setTipoEntregaPedido(tipoEntregaPedidoDTO);
+        pedidoDTO.setTipoPagoPedido(tipoPagoPedidoDTO);
         Cliente cliente = clienteRepository.findByPedidoId(pedido.getId());
         ClienteDTO clienteDTO = new ClienteDTO();
         clienteDTO.setId(cliente.getId());

@@ -15,6 +15,8 @@ public interface PedidoService {
 
     List<PedidoDTO> findByCliente(Long idCliente) throws Exception;
 
+    List<PedidoDTO> findByEstado(String estado) throws Exception;
+
     Pedido save(PedidoDTO entity) throws Exception;
 
     Pedido update(Long id, PedidoDTO entity) throws Exception;
