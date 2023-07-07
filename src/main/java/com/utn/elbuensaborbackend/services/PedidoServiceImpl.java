@@ -38,67 +38,10 @@ public class PedidoServiceImpl implements PedidoService {
             List<PedidoDTO> pedidoDTOs = new ArrayList<>();
 
             for (Pedido am : pedidos) {
-                PedidoDTO pedidoDTO = new PedidoDTO();
-                pedidoDTO.setId(am.getId());
-                pedidoDTO.setFecha(am.getFecha());
-                pedidoDTO.setHoraEstimadaFin(am.getHoraEstimadaFin());
-                pedidoDTO.setMontoDescuento(am.getMontoDescuento());
-                pedidoDTO.setPagado(am.isPagado());
-                pedidoDTO.setEstado(am.getEstado());
-
-
-
-                //Cliente
-
-                Cliente cliente = clienteRepository.findByPedidoId(am.getId());
-
-                ClienteDTO clienteDTO = new ClienteDTO();
-                clienteDTO.setId(cliente.getId());
-                clienteDTO.setNombre(cliente.getNombre());
-                clienteDTO.setApellido(cliente.getApellido());
-                //????clienteDTO.getDomicilio(cliente.getDomicilio());
-                //Domicilio tabla asociada de cliente
-                /*Domicilio domicilio =
-                        domicilioRepository.findByClienteId(cliente.getId());
-
-                DomicilioDTO domicilioDTO =
-                        new DomicilioDTO();
-                domicilioDTO.setId(domicilio.getId());
-                domicilioDTO.setCalle(domicilio.getCalle());
-                domicilioDTO.setNumero(domicilio.getNumero());
-
-                clienteDTO.setDomicilio(domicilioDTO);
-                clienteDTO.setTelefono(cliente.getTelefono());*/
-                //????clienteDTO.setUsuario(cliente.getUsuario());
-
-                //Tipo Entrega Pedido
-
-                TipoEntregaPedido tipoEntregaPedido = tipoEntregaPedidoRepository.findByPedidoId(am.getId());
-
-                TipoEntregaPedidoDTO tipoEntregaPedidoDTO = new TipoEntregaPedidoDTO();
-                tipoEntregaPedidoDTO.setId(tipoEntregaPedido.getId());
-                tipoEntregaPedidoDTO.setDescripcion(tipoEntregaPedido.getDescripcion());
-
-                //Tipo Pago Pedido
-
-                TipoPagoPedido tipoPagoPedido = tipoPagoPedidoRepository.findByPedidoId(am.getId());
-
-                TipoPagoPedidoDTO tipoPagoPedidoDTO = new TipoPagoPedidoDTO();
-                tipoPagoPedidoDTO.setId(tipoPagoPedido.getId());
-                tipoPagoPedidoDTO.setDescripcion(tipoPagoPedido.getDescripcion());
-
-
-                pedidoDTO.setCliente(clienteDTO);
-                pedidoDTO.setTipoEntregaPedido(tipoEntregaPedidoDTO);
-                pedidoDTO.setTipoPagoPedido(tipoPagoPedidoDTO);
+                PedidoDTO pedidoDTO = mapPedidoToDTO(am);
                 pedidoDTOs.add(pedidoDTO);
             }
 
-
-            for (PedidoDTO pro : pedidoDTOs) {
-                System.out.println(pro.getTipoEntregaPedido().getDescripcion());
-                System.out.println(pro.getTipoPagoPedido().getDescripcion());
-            }
             return pedidoDTOs;
         } catch (Exception e) {
             throw new Exception(e.getMessage());
@@ -109,58 +52,7 @@ public class PedidoServiceImpl implements PedidoService {
     public PedidoDTO findById(Long id) throws Exception {
         try {
             Pedido pedido = pedidoRepository.findById(id).get();
-            PedidoDTO pedidoDTO = new PedidoDTO();
-
-            pedidoDTO.setId(pedido.getId());
-            pedidoDTO.setFecha(pedido.getFecha());
-            pedidoDTO.setHoraEstimadaFin(pedido.getHoraEstimadaFin());
-            pedidoDTO.setMontoDescuento(pedido.getMontoDescuento());
-
-
-            Cliente cliente =
-                    clienteRepository.findByPedidoId(pedido.getId());
-
-            ClienteDTO clienteDTO =
-                    new ClienteDTO();
-            clienteDTO.setId(cliente.getId());
-            clienteDTO.setApellido(cliente.getApellido());
-            clienteDTO.setNombre(cliente.getNombre());
-            clienteDTO.setTelefono(cliente.getTelefono());
-
-            //Domicilio tabla asociada de cliente ver si esta bien, quizas solo tengo que indicar el id del cliente
-            /*Domicilio domicilio =
-                    domicilioRepository.findByClienteId(cliente.getId());
-
-            DomicilioDTO domicilioDTO =
-                    new DomicilioDTO();
-            domicilioDTO.setId(domicilio.getId());
-            domicilioDTO.setCalle(domicilio.getCalle());
-            domicilioDTO.setNumero(domicilio.getNumero());
-
-            clienteDTO.setDomicilio(domicilioDTO);*/
-
-            //????clienteDTO.setUsuario(cliente.getUsuario());
-
-            //Tipo Entrega Pedido
-
-            TipoEntregaPedido tipoEntregaPedido = tipoEntregaPedidoRepository.findByPedidoId(pedido.getId());
-
-            TipoEntregaPedidoDTO tipoEntregaPedidoDTO = new TipoEntregaPedidoDTO();
-            tipoEntregaPedidoDTO.setId(tipoEntregaPedido.getId());
-            tipoEntregaPedidoDTO.setDescripcion(tipoEntregaPedido.getDescripcion());
-
-            //Tipo Pago Pedido
-
-            TipoPagoPedido tipoPagoPedido = tipoPagoPedidoRepository.findByPedidoId(pedido.getId());
-
-            TipoPagoPedidoDTO tipoPagoPedidoDTO = new TipoPagoPedidoDTO();
-            tipoPagoPedidoDTO.setId(tipoPagoPedido.getId());
-            tipoPagoPedidoDTO.setDescripcion(tipoPagoPedido.getDescripcion());
-
-            pedidoDTO.setCliente(clienteDTO);
-            pedidoDTO.setTipoEntregaPedido(tipoEntregaPedidoDTO);
-            pedidoDTO.setTipoPagoPedido(tipoPagoPedidoDTO);
-
+            PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
 
             return pedidoDTO;
         } catch (Exception e) {
@@ -242,13 +134,14 @@ public class PedidoServiceImpl implements PedidoService {
 
         pedidoDTO.setTipoEntregaPedido(tipoEntregaPedidoDTO);
         pedidoDTO.setTipoPagoPedido(tipoPagoPedidoDTO);
+        /*
         Cliente cliente = clienteRepository.findByPedidoId(pedido.getId());
         ClienteDTO clienteDTO = new ClienteDTO();
         clienteDTO.setId(cliente.getId());
         clienteDTO.setNombre(cliente.getNombre());
         clienteDTO.setApellido(cliente.getApellido());
 
-        pedidoDTO.setCliente(clienteDTO);
+        pedidoDTO.setCliente(clienteDTO);*/
 
         return pedidoDTO;
     }

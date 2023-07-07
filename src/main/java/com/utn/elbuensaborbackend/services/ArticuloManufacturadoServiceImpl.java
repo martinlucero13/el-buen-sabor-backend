@@ -48,11 +48,6 @@ public class ArticuloManufacturadoServiceImpl implements ArticuloManufacturadoSe
                 imagenDTO.setId(imagen.getId());
                 imagenDTO.setNombre(imagen.getNombre());
 
-                /*Receta receta = recetaRepository.findByArticuloManufacturadoId(am.getId());
-                RecetaDTO recetaDTO = new RecetaDTO();
-                recetaDTO.setId(receta.getId());
-                recetaDTO.setDescripcion(receta.getDescripcion());*/
-
 
                 ArticuloManufacturadoPrecioVenta articuloManufacturadoPrecioVenta =
                         articuloManufacturadoPrecioVentaRepository.findByArticuloManufacturadoId(am.getId());
@@ -63,7 +58,6 @@ public class ArticuloManufacturadoServiceImpl implements ArticuloManufacturadoSe
                 articuloManufacturadoPrecioVentaDTO.setFecha(articuloManufacturadoPrecioVenta.getFecha());
                 articuloManufacturadoPrecioVentaDTO.setPrecioVenta(articuloManufacturadoPrecioVenta.getPrecioVenta());
 
-                //Rubro
 
                 Rubro rubro =
                         rubroRepository.findByManufacturadoId(am.getId());
@@ -74,7 +68,6 @@ public class ArticuloManufacturadoServiceImpl implements ArticuloManufacturadoSe
                 rubroDTO.setDenominacion(rubro.getDenominacion());
 
 
-                //articuloManufacturadoDTO.setReceta(recetaDTO);
                 articuloManufacturadoDTO.setRubro(rubroDTO);
                 articuloManufacturadoDTO.setArticuloManufacturadoPrecioVenta(articuloManufacturadoPrecioVentaDTO);
                 articuloManufacturadoDTO.setImagen(imagenDTO);
@@ -97,14 +90,6 @@ public class ArticuloManufacturadoServiceImpl implements ArticuloManufacturadoSe
             articuloManufacturadoDTO.setDenominacion(articuloManufacturado.getDenominacion());
             articuloManufacturadoDTO.setDescripcion(articuloManufacturado.getDescripcion());
             articuloManufacturadoDTO.setTiempoEstimadoCocina(articuloManufacturado.getTiempoEstimadoCocina());
-
-            /*if(recetaValidar){
-                Receta receta = recetaRepository.findByArticuloManufacturadoId(id);
-                RecetaDTO recetaDTO = new RecetaDTO();
-                recetaDTO.setId(receta.getId());
-                recetaDTO.setDescripcion(receta.getDescripcion());
-                articuloManufacturadoDTO.setReceta(recetaDTO);
-            }*/
 
             Rubro rubro =
                     rubroRepository.findByManufacturadoId(articuloManufacturado.getId());
@@ -163,11 +148,6 @@ public class ArticuloManufacturadoServiceImpl implements ArticuloManufacturadoSe
                 articuloManufacturadoDTO.setDescripcion(am.getDescripcion());
                 articuloManufacturadoDTO.setTiempoEstimadoCocina(am.getTiempoEstimadoCocina());
 
-                /*Receta receta = recetaRepository.findByArticuloManufacturadoId(am.getId());
-                RecetaDTO recetaDTO = new RecetaDTO();
-                recetaDTO.setId(receta.getId());
-                recetaDTO.setDescripcion(receta.getDescripcion());*/
-
                 Imagen imagen = imagenRepository.findByArticuloManufacturadoId(am.getId());
                 ImagenDTO imagenDTO = new ImagenDTO();
 
@@ -182,7 +162,6 @@ public class ArticuloManufacturadoServiceImpl implements ArticuloManufacturadoSe
                 articuloManufacturadoPrecioVentaDTO.setId(articuloManufacturadoPrecioVenta.getId());
                 articuloManufacturadoPrecioVentaDTO.setFecha(articuloManufacturadoPrecioVenta.getFecha());
                 articuloManufacturadoPrecioVentaDTO.setPrecioVenta(articuloManufacturadoPrecioVenta.getPrecioVenta());
-                //articuloManufacturadoDTO.setReceta(recetaDTO);
                 articuloManufacturadoDTO.setImagen(imagenDTO);
                 articuloManufacturadoDTO.setArticuloManufacturadoPrecioVenta(articuloManufacturadoPrecioVentaDTO);
 
