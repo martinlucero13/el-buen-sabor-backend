@@ -29,6 +29,8 @@ public class PedidoServiceImpl implements PedidoService {
     @Autowired
     private DomicilioRepository domicilioRepository;
 
+    @Autowired
+    private LocalidadRepository localidadRepository;
 
 
     @Override
@@ -134,14 +136,29 @@ public class PedidoServiceImpl implements PedidoService {
 
         pedidoDTO.setTipoEntregaPedido(tipoEntregaPedidoDTO);
         pedidoDTO.setTipoPagoPedido(tipoPagoPedidoDTO);
-        /*
+
         Cliente cliente = clienteRepository.findByPedidoId(pedido.getId());
         ClienteDTO clienteDTO = new ClienteDTO();
         clienteDTO.setId(cliente.getId());
         clienteDTO.setNombre(cliente.getNombre());
         clienteDTO.setApellido(cliente.getApellido());
+        clienteDTO.setTelefono(cliente.getTelefono());
 
-        pedidoDTO.setCliente(clienteDTO);*/
+        Domicilio domicilio = domicilioRepository.findByClienteId(cliente.getId());
+        DomicilioDTO domicilioDTO = new DomicilioDTO();
+        domicilioDTO.setId(domicilio.getId());
+        domicilioDTO.setCalle(domicilio.getCalle());
+        domicilioDTO.setNumero(domicilio.getNumero());
+
+        Localidad localidad = localidadRepository.findByDomicilioId(domicilio.getId());
+        LocalidadDTO localidadDTO = new LocalidadDTO();
+        localidadDTO.setId(localidad.getId());
+        localidadDTO.setNombre(localidad.getNombre());
+
+        domicilioDTO.setLocalidad(localidadDTO);
+        clienteDTO.setDomicilio(domicilioDTO);
+
+        pedidoDTO.setCliente(clienteDTO);
 
         return pedidoDTO;
     }
