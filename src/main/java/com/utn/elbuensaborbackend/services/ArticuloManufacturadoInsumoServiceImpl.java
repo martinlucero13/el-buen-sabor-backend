@@ -92,32 +92,17 @@ public class ArticuloManufacturadoInsumoServiceImpl implements ArticuloManufactu
     }
 
     @Override
-    public ArticuloManufacturadoInsumo update(Long aLong, ArticuloManufacturadoInsumoDTO dto) throws Exception {
+    public void update(Long aLong, ArticuloManufacturadoInsumoDTO dto) throws Exception {
         Optional<ArticuloManufacturadoInsumo> optionalArticuloManufacturadoInsumo = articuloManufacturadoInsumoRepository.findById(aLong);
 
         if (optionalArticuloManufacturadoInsumo.isPresent()) {
-            System.out.println("Entra");
-            ArticuloManufacturadoInsumo articuloManufacturadoInsumo = optionalArticuloManufacturadoInsumo.get();
-            articuloManufacturadoInsumo.setCantidad(dto.getCantidad());
+            optionalArticuloManufacturadoInsumo.get().setCantidad(dto.getCantidad());
 
-            System.out.println("cantidad: "+articuloManufacturadoInsumo.getCantidad());
-            System.out.println("manufacturado: "+articuloManufacturadoInsumo.getArticuloManufacturado().getDenominacion());
-            System.out.println("insumo: "+articuloManufacturadoInsumo.getArticuloInsumo().getDenominacion());
-            Optional<ArticuloManufacturado> articuloManufacturado = articuloManufacturadoRepository
-                    .findById(dto.getArticuloManufacturadoId());
-
-            Optional<ArticuloInsumo> articuloInsumo = articuloInsumoRepository
-                    .findById(dto.getArticuloInsumoId());
-
-
-            articuloManufacturadoInsumo.setArticuloInsumo(articuloInsumo.get());
-            articuloManufacturadoInsumo.setArticuloManufacturado(articuloManufacturado.get());
-            return articuloManufacturadoInsumoRepository.save(articuloManufacturadoInsumo);
+            articuloManufacturadoInsumoRepository.save(optionalArticuloManufacturadoInsumo.get());
         }
         else{
             System.out.println("Error");
         }
-        return null;
     }
 
     @Override

@@ -39,8 +39,9 @@ public class RecetaController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody RecetaDTO entity) {
         try {
+            service.updateReceta(id, entity);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(service.updateReceta(id, entity));
+                    .body("{\"message\":\"Recetao actualizada exitosamente\"}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("{\"error\": \"Ocurrio un error\"}");

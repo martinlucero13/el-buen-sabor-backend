@@ -28,6 +28,7 @@ public class RecetaServiceImpl extends BaseServiceImpl<Receta, RecetaDTO, Long> 
     @Override
     public RecetaDTO findByArticuloManufacturadoId(Long articuloManufacturadoId) throws Exception {
         try {
+            System.out.println("Entra Find");
             Receta receta = recetaRepository.findByArticuloManufacturadoId(articuloManufacturadoId);
             RecetaDTO recetaDTO = new RecetaDTO();
             if (receta != null) {
@@ -62,15 +63,15 @@ public class RecetaServiceImpl extends BaseServiceImpl<Receta, RecetaDTO, Long> 
         }
     }
 
-    public Receta updateReceta(Long aLong, RecetaDTO dto) throws Exception {
+    public void updateReceta(Long aLong, RecetaDTO dto) throws Exception {
         try {
+            System.out.println("Entra Update");
             Optional<Receta> receta = recetaRepository.findById(aLong);
             receta.get().setDescripcion(dto.getDescripcion());
             System.out.println(receta.get().getDescripcion());
             System.out.println(receta.get().getId());
-            System.out.println(receta.get().getArticuloManufacturado());
-
-            return recetaRepository.save(receta.get());
+            System.out.println(receta.get().getArticuloManufacturado().getId());
+            recetaRepository.save(receta.get());
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }

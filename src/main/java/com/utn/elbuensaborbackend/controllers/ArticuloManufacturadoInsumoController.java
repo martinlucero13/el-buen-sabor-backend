@@ -58,9 +58,9 @@ public class ArticuloManufacturadoInsumoController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ArticuloManufacturadoInsumoDTO entity) {
         try {
-            ArticuloManufacturadoInsumo articuloManufacturadoInsumo = service.update(id, entity);
+            service.update(id,entity);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(articuloManufacturadoInsumo);
+                    .body("{\"message\":\"Artículo manufacturado insumo actualizado exitosamente\"}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\":\"Error al actualizar el artículo manufacturado\"}");

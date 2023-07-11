@@ -18,7 +18,7 @@ public interface ArticuloManufacturadoInsumoService{
 
     ArticuloManufacturadoInsumo save(ArticuloManufacturadoInsumoDTO entity) throws Exception;
 
-    ArticuloManufacturadoInsumo update(Long id, ArticuloManufacturadoInsumoDTO entity) throws Exception;
+    void update(Long id, ArticuloManufacturadoInsumoDTO entity) throws Exception;
 
     void delete(Long id) throws Exception;
 }
