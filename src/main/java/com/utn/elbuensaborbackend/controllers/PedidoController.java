@@ -29,7 +29,7 @@ public class PedidoController {
     public ResponseEntity<?> getByCliente(@PathVariable Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(service.findAll());
+                    .body(service.findByCliente(id));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("{\"error\":\"Error. No se pudieron recuperar los pedidos por termino\"}");
@@ -90,6 +90,30 @@ public class PedidoController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\":\"Error al actualizar el pedido \"}");
+        }
+    }
+
+    @PutMapping("/minuto/{id}")
+    public ResponseEntity<?> sumarMinutos(@PathVariable Long id, @RequestBody PedidoDTO entity) {
+        try {
+            PedidoDTO pedido = service.updateFecha(id, entity);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(pedido);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\":\"Error al sumar 10 min en pedido \"}");
+        }
+    }
+
+    @PutMapping("/estado/{id}")
+    public ResponseEntity<?> cambiarEstado(@PathVariable Long id, @RequestBody PedidoDTO entity) {
+        try {
+            PedidoDTO pedido = service.updateEstado(id, entity);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(pedido);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\":\"Error al sumar 10 min en pedido \"}");
         }
     }
 

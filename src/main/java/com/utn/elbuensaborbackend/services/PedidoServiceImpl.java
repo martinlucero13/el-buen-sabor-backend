@@ -8,9 +8,9 @@ import com.utn.elbuensaborbackend.services.interfaces.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.sql.Time;
+import java.time.LocalTime;
+import java.util.*;
 
 @Service
 public class PedidoServiceImpl implements PedidoService {
@@ -215,6 +215,47 @@ public class PedidoServiceImpl implements PedidoService {
                 pedido.setMontoDescuento(entity.getMontoDescuento());
 
                 return pedidoRepository.save(pedido);
+            }
+            return null;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+
+    @Override
+    public PedidoDTO updateFecha(Long id, PedidoDTO entity) throws Exception {
+        try {
+            Optional<Pedido> optionalPedido = pedidoRepository.findById(id);
+            if (optionalPedido.isPresent()) {
+                Pedido pedido = optionalPedido.get();
+                Time horaEstimadaFin = Time.valueOf(pedido.getHoraEstimadaFin().toString());
+                LocalTime localTime = horaEstimadaFin.toLocalTime();
+                LocalTime horaEstimadaFinActualizada = localTime.plusMinutes(10);
+                Time horaEstimadaFinActualizadaSQL = Time.valueOf(horaEstimadaFinActualizada);
+                pedido.setHoraEstimadaFin(horaEstimadaFinActualizadaSQL);
+                pedidoRepository.save(pedido);
+                PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
+                return pedidoDTO;
+
+
+            }
+            return null;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @Override
+    public PedidoDTO updateEstado(Long id, PedidoDTO entity) throws Exception {
+        try {
+            Optional<Pedido> optionalPedido = pedidoRepository.findById(id);
+            if (optionalPedido.isPresent()) {
+                Pedido pedido = optionalPedido.get();
+                pedido.setEstado(entity.getEstado());
+                pedidoRepository.save(pedido);
+                PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
+                return pedidoDTO;
             }
             return null;
         } catch (Exception e) {

@@ -19,7 +19,7 @@ public class ArticuloInsumoStockActualServiceImpl {
             Optional<ArticuloInsumoStockActual> articuloInsumoStockActual = articuloInsumoStockActualRepository.findById(aLong);
             articuloInsumoStockActual.get().setStockActual(dto.getStockActual());
             articuloInsumoStockActual.get().setFecha(dto.getFecha());
-            
+
 
             return articuloInsumoStockActualRepository.save(articuloInsumoStockActual.get());
         } catch (Exception e) {
