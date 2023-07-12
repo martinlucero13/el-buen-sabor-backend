@@ -41,64 +41,11 @@ public class ArticuloInsumoServiceImpl implements ArticuloInsumoService {
             List<ArticuloInsumoDTO> articuloInsumoDTOs = new ArrayList<>();
 
             for (ArticuloInsumo ai : articuloInsumo) {
-                ArticuloInsumoDTO articuloInsumoDTO = new ArticuloInsumoDTO();
-                articuloInsumoDTO.setId(ai.getId());
-                articuloInsumoDTO.setEsInsumo(ai.getEsInsumo());
-                articuloInsumoDTO.setDenominacion(ai.getDenominacion());
-                //PRECIO COMPRA
-                ArticuloInsumoPrecioCompra precioCompra =
-                        articuloInsumoPrecioCompraRepository.findByInsumoId(ai.getId());
-                ArticuloInsumoPrecioCompraDTO precioCompraDTO = new ArticuloInsumoPrecioCompraDTO();
-
-                precioCompraDTO.setId(precioCompra.getId());
-                precioCompraDTO.setFecha(precioCompra.getFecha());
-                precioCompraDTO.setMonto(precioCompra.getMonto());
-
-
-                //STOCK MINIMO
-                ArticuloInsumoStockMinimo articuloInsumoStockMinimo =
-                        articuloInsumoStockMinimoRepository.findByInsumoId(ai.getId());
-                ArticuloInsumoStockMinimoDTO articuloInsumoStockMinimoDTO =
-                        new ArticuloInsumoStockMinimoDTO();
-
-                articuloInsumoStockMinimoDTO.setId(articuloInsumoStockMinimo.getId());
-                articuloInsumoStockMinimoDTO.setStockMinimo(articuloInsumoStockMinimo.getStockMinimo());
-                articuloInsumoStockMinimoDTO.setFecha(articuloInsumoStockMinimo.getFecha());
-
-                //STOCK ACTUAL
-                ArticuloInsumoStockActual articuloInsumoStockActual =
-                        articuloInsumoStockActualRepository.findByInsumoId(ai.getId());
-                ArticuloInsumoStockActualDTO articuloInsumoStockActualDTO =
-                        new ArticuloInsumoStockActualDTO();
-
-                articuloInsumoStockActualDTO.setId(articuloInsumoStockActual.getId());
-                articuloInsumoStockActualDTO.setStockActual(articuloInsumoStockActual.getStockActual());
-                articuloInsumoStockActualDTO.setFecha(articuloInsumoStockActual.getFecha());
-
-                //UNIDAD MEDIDA
-                UnidadMedida unidadMedida =
-                        unidadMedidaRepository.findByInsumoId(ai.getId());
-
-                UnidadMedidaDTO unidadMedidaDTO =
-                        new UnidadMedidaDTO();
-                unidadMedidaDTO.setId(unidadMedida.getId());
-                unidadMedidaDTO.setDenominacion(unidadMedida.getDenominacion());
-
-
-                //Rubro
-                Rubro rubro =
-                        rubroRepository.findByInsumoId(ai.getId());
-
-                RubroDTO rubroDTO =
-                        new RubroDTO();
+                ArticuloInsumoDTO articuloInsumoDTO = createArticuloInsumoDTO(ai);
+                Rubro rubro = rubroRepository.findByInsumoId(ai.getId());
+                RubroDTO rubroDTO = new RubroDTO();
                 rubroDTO.setId(rubro.getId());
                 rubroDTO.setDenominacion(rubro.getDenominacion());
-
-
-                articuloInsumoDTO.setArticuloInsumoPrecioCompra(precioCompraDTO);
-                articuloInsumoDTO.setArticuloInsumoStockActual(articuloInsumoStockActualDTO);
-                articuloInsumoDTO.setArticuloInsumoStockMinimo(articuloInsumoStockMinimoDTO);
-                articuloInsumoDTO.setUnidadMedida(unidadMedidaDTO);
                 articuloInsumoDTO.setRubro(rubroDTO);
                 articuloInsumoDTOs.add(articuloInsumoDTO);
             }
@@ -116,65 +63,7 @@ public class ArticuloInsumoServiceImpl implements ArticuloInsumoService {
             List<ArticuloInsumoDTO> articuloInsumoDTOs = new ArrayList<>();
 
             for (ArticuloInsumo ai : articuloInsumo) {
-                ArticuloInsumoDTO articuloInsumoDTO = new ArticuloInsumoDTO();
-                articuloInsumoDTO.setId(ai.getId());
-                articuloInsumoDTO.setEsInsumo(ai.getEsInsumo());
-                articuloInsumoDTO.setDenominacion(ai.getDenominacion());
-
-                //PRECIO COMPRA
-                ArticuloInsumoPrecioCompra precioCompra = articuloInsumoPrecioCompraRepository.findByInsumoId(ai.getId());
-                ArticuloInsumoPrecioCompraDTO precioCompraDTO = new ArticuloInsumoPrecioCompraDTO();
-
-                precioCompraDTO.setId(precioCompra.getId());
-                precioCompraDTO.setFecha(precioCompra.getFecha());
-                precioCompraDTO.setMonto(precioCompra.getMonto());
-
-
-                //STOCK MINIMO
-                ArticuloInsumoStockMinimo articuloInsumoStockMinimo =
-                        articuloInsumoStockMinimoRepository.findByInsumoId(ai.getId());
-                ArticuloInsumoStockMinimoDTO articuloInsumoStockMinimoDTO =
-                        new ArticuloInsumoStockMinimoDTO();
-
-                articuloInsumoStockMinimoDTO.setId(articuloInsumoStockMinimo.getId());
-                articuloInsumoStockMinimoDTO.setStockMinimo(articuloInsumoStockMinimo.getStockMinimo());
-                articuloInsumoStockMinimoDTO.setFecha(articuloInsumoStockMinimo.getFecha());
-
-                //STOCK ACTUAL
-                ArticuloInsumoStockActual articuloInsumoStockActual =
-                        articuloInsumoStockActualRepository.findByInsumoId(ai.getId());
-                ArticuloInsumoStockActualDTO articuloInsumoStockActualDTO =
-                        new ArticuloInsumoStockActualDTO();
-
-                articuloInsumoStockActualDTO.setId(articuloInsumoStockActual.getId());
-                articuloInsumoStockActualDTO.setStockActual(articuloInsumoStockActual.getStockActual());
-                articuloInsumoStockActualDTO.setFecha(articuloInsumoStockActual.getFecha());
-                //UNIDAD MEDIDA
-                UnidadMedida unidadMedida =
-                        unidadMedidaRepository.findByInsumoId(ai.getId());
-
-                UnidadMedidaDTO unidadMedidaDTO =
-                        new UnidadMedidaDTO();
-
-                unidadMedidaDTO.setId(unidadMedida.getId());
-                unidadMedidaDTO.setDenominacion(unidadMedida.getDenominacion());
-
-                articuloInsumoDTO.setArticuloInsumoPrecioCompra(precioCompraDTO);
-                articuloInsumoDTO.setArticuloInsumoStockActual(articuloInsumoStockActualDTO);
-                articuloInsumoDTO.setArticuloInsumoStockMinimo(articuloInsumoStockMinimoDTO);
-                articuloInsumoDTO.setUnidadMedida(unidadMedidaDTO);
-
-                articuloInsumoDTOs.add(articuloInsumoDTO);
-
-
-                unidadMedidaDTO.setId(unidadMedida.getId());
-                unidadMedidaDTO.setDenominacion(unidadMedida.getDenominacion());
-
-                articuloInsumoDTO.setArticuloInsumoPrecioCompra(precioCompraDTO);
-                articuloInsumoDTO.setArticuloInsumoStockActual(articuloInsumoStockActualDTO);
-                articuloInsumoDTO.setArticuloInsumoStockMinimo(articuloInsumoStockMinimoDTO);
-                articuloInsumoDTO.setUnidadMedida(unidadMedidaDTO);
-
+                ArticuloInsumoDTO articuloInsumoDTO = createArticuloInsumoDTO(ai);
                 articuloInsumoDTOs.add(articuloInsumoDTO);
             }
 
@@ -189,55 +78,7 @@ public class ArticuloInsumoServiceImpl implements ArticuloInsumoService {
     public ArticuloInsumoDTO findById(Long id) throws Exception {
         try {
             ArticuloInsumo articuloInsumo = articuloInsumoRepository.findById(id).get();
-            ArticuloInsumoDTO articuloInsumoDTO = new ArticuloInsumoDTO();
-
-            articuloInsumoDTO.setId(articuloInsumo.getId());
-            articuloInsumoDTO.setEsInsumo(articuloInsumo.getEsInsumo());
-            articuloInsumoDTO.setDenominacion(articuloInsumo.getDenominacion());
-
-            //PRECIO COMPRA
-            ArticuloInsumoPrecioCompra precioCompra =
-                    articuloInsumoPrecioCompraRepository.findByInsumoId(articuloInsumo.getId());
-            ArticuloInsumoPrecioCompraDTO precioCompraDTO =
-                    new ArticuloInsumoPrecioCompraDTO();
-
-            precioCompraDTO.setId(precioCompra.getId());
-            precioCompraDTO.setFecha(precioCompra.getFecha());
-            precioCompraDTO.setMonto(precioCompra.getMonto());
-
-            //STOCK MINIMO
-            ArticuloInsumoStockMinimo articuloInsumoStockMinimo =
-                    articuloInsumoStockMinimoRepository.findByInsumoId(articuloInsumo.getId());
-            ArticuloInsumoStockMinimoDTO articuloInsumoStockMinimoDTO =
-                    new ArticuloInsumoStockMinimoDTO();
-
-            articuloInsumoStockMinimoDTO.setId(articuloInsumoStockMinimo.getId());
-            articuloInsumoStockMinimoDTO.setStockMinimo(articuloInsumoStockMinimo.getStockMinimo());
-            articuloInsumoStockMinimoDTO.setFecha(articuloInsumoStockMinimo.getFecha());
-
-            //STOCK ACTUAL
-            ArticuloInsumoStockActual articuloInsumoStockActual =
-                    articuloInsumoStockActualRepository.findByInsumoId(articuloInsumo.getId());
-            ArticuloInsumoStockActualDTO articuloInsumoStockActualDTO =
-                    new ArticuloInsumoStockActualDTO();
-
-            articuloInsumoStockActualDTO.setId(articuloInsumoStockActual.getId());
-            articuloInsumoStockActualDTO.setStockActual(articuloInsumoStockActual.getStockActual());
-            articuloInsumoStockActualDTO.setFecha(articuloInsumoStockActual.getFecha());
-
-            //UNIDAD MEDIDA
-            UnidadMedida unidadMedida =
-                    unidadMedidaRepository.findByInsumoId(articuloInsumo.getId());
-            UnidadMedidaDTO unidadMedidaDTO =
-                    new UnidadMedidaDTO();
-
-            unidadMedidaDTO.setId(unidadMedida.getId());
-            unidadMedidaDTO.setDenominacion(unidadMedida.getDenominacion());
-
-            articuloInsumoDTO.setArticuloInsumoPrecioCompra(precioCompraDTO);
-            articuloInsumoDTO.setArticuloInsumoStockActual(articuloInsumoStockActualDTO);
-            articuloInsumoDTO.setArticuloInsumoStockMinimo(articuloInsumoStockMinimoDTO);
-            articuloInsumoDTO.setUnidadMedida(unidadMedidaDTO);
+            ArticuloInsumoDTO articuloInsumoDTO = createArticuloInsumoDTO(articuloInsumo);
 
             return articuloInsumoDTO;
         } catch (Exception e) {
@@ -451,6 +292,43 @@ public class ArticuloInsumoServiceImpl implements ArticuloInsumoService {
             throw new Exception(e.getMessage());
         }
 
+    }
+
+    private ArticuloInsumoDTO createArticuloInsumoDTO(ArticuloInsumo ai) {
+        ArticuloInsumoDTO articuloInsumoDTO = new ArticuloInsumoDTO();
+        articuloInsumoDTO.setId(ai.getId());
+        articuloInsumoDTO.setEsInsumo(ai.getEsInsumo());
+        articuloInsumoDTO.setDenominacion(ai.getDenominacion());
+
+        ArticuloInsumoPrecioCompra precioCompra = articuloInsumoPrecioCompraRepository.findByInsumoId(ai.getId());
+        ArticuloInsumoPrecioCompraDTO precioCompraDTO = new ArticuloInsumoPrecioCompraDTO();
+        precioCompraDTO.setId(precioCompra.getId());
+        precioCompraDTO.setFecha(precioCompra.getFecha());
+        precioCompraDTO.setMonto(precioCompra.getMonto());
+        articuloInsumoDTO.setArticuloInsumoPrecioCompra(precioCompraDTO);
+
+        ArticuloInsumoStockMinimo articuloInsumoStockMinimo = articuloInsumoStockMinimoRepository.findByInsumoId(ai.getId());
+        ArticuloInsumoStockMinimoDTO articuloInsumoStockMinimoDTO = new ArticuloInsumoStockMinimoDTO();
+        articuloInsumoStockMinimoDTO.setId(articuloInsumoStockMinimo.getId());
+        articuloInsumoStockMinimoDTO.setStockMinimo(articuloInsumoStockMinimo.getStockMinimo());
+        articuloInsumoStockMinimoDTO.setFecha(articuloInsumoStockMinimo.getFecha());
+        articuloInsumoDTO.setArticuloInsumoStockMinimo(articuloInsumoStockMinimoDTO);
+
+        ArticuloInsumoStockActual articuloInsumoStockActual = articuloInsumoStockActualRepository.findByInsumoId(ai.getId());
+        ArticuloInsumoStockActualDTO articuloInsumoStockActualDTO = new ArticuloInsumoStockActualDTO();
+        articuloInsumoStockActualDTO.setId(articuloInsumoStockActual.getId());
+        articuloInsumoStockActualDTO.setStockActual(articuloInsumoStockActual.getStockActual());
+        articuloInsumoStockActualDTO.setFecha(articuloInsumoStockActual.getFecha());
+        articuloInsumoDTO.setArticuloInsumoStockActual(articuloInsumoStockActualDTO);
+
+        UnidadMedida unidadMedida = unidadMedidaRepository.findByInsumoId(ai.getId());
+        UnidadMedidaDTO unidadMedidaDTO = new UnidadMedidaDTO();
+        unidadMedidaDTO.setId(unidadMedida.getId());
+        unidadMedidaDTO.setDenominacion(unidadMedida.getDenominacion());
+
+        articuloInsumoDTO.setUnidadMedida(unidadMedidaDTO);
+
+        return articuloInsumoDTO;
     }
 
 }
