@@ -24,7 +24,7 @@ public interface PedidoService {
 
     PedidoDTO updateFecha(Long id, PedidoDTO entity) throws Exception;
 
-    PedidoDTO updateEstado(Long id, PedidoDTO entity) throws Exception;
+    PedidoDTO updateEstado(Long id, String estado) throws Exception;
 
     void delete(Long id) throws Exception;
 

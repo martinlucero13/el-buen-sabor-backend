@@ -247,12 +247,12 @@ public class PedidoServiceImpl implements PedidoService {
     }
 
     @Override
-    public PedidoDTO updateEstado(Long id, PedidoDTO entity) throws Exception {
+    public PedidoDTO updateEstado(Long id, String estado) throws Exception {
         try {
             Optional<Pedido> optionalPedido = pedidoRepository.findById(id);
             if (optionalPedido.isPresent()) {
                 Pedido pedido = optionalPedido.get();
-                pedido.setEstado(entity.getEstado());
+                pedido.setEstado(estado.replaceAll("\"", ""));
                 pedidoRepository.save(pedido);
                 PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
                 return pedidoDTO;

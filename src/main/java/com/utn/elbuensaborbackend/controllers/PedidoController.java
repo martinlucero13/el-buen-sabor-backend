@@ -106,9 +106,9 @@ public class PedidoController {
     }
 
     @PutMapping("/estado/{id}")
-    public ResponseEntity<?> cambiarEstado(@PathVariable Long id, @RequestBody PedidoDTO entity) {
+    public ResponseEntity<?> cambiarEstado(@PathVariable Long id, @RequestBody String estado) {
         try {
-            PedidoDTO pedido = service.updateEstado(id, entity);
+            PedidoDTO pedido = service.updateEstado(id, estado);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(pedido);
         } catch (Exception e) {
