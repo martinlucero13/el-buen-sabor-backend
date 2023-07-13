@@ -17,6 +17,16 @@ public class ClienteController extends BaseControllerImpl<Cliente, ClienteDTO> {
     @Autowired
     private ClienteServiceImpl service;
 
+    @GetMapping("")
+    public ResponseEntity<?> getAll() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(service.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\":\"Error. No se pudieron recuperar los pedidos por termino\"}");
+        }
+    }
     @GetMapping("/byRoles/{roles}")
     public ResponseEntity<?> getAllClientesByRoles(@PathVariable List<String> roles) {
         try {
