@@ -1,28 +1,17 @@
 package com.utn.elbuensaborbackend.dtos;
 
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.Date;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class MercadoPagoDatosDTO {
-    private Long id;
+@Data
+public class MercadoPagoDatosDTO extends BaseDTO {
 
     private Long identificadorPago;
-
     private Date fechaCreacion;
-
     private Date fechaAprobacion;
-
     private String formaPago;
-
     private String metodoPago;
-
     private String nroTarjeta;
-
     private String estado;
 }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Time;
+import java.util.List;
 
 @Entity
 @Table(name = "articulo_manufacturado")
@@ -27,4 +28,22 @@ public class ArticuloManufacturado extends Base {
     @ManyToOne
     @JoinColumn(name = "rubro_id")
 	private Rubro rubro;
+
+    @OneToOne(mappedBy = "articuloManufacturado", cascade = CascadeType.ALL)
+    private Imagen imagen;
+
+    @OneToOne(mappedBy = "articuloManufacturado", cascade = CascadeType.ALL)
+    private Receta receta;
+
+    @OneToMany(mappedBy = "articuloManufacturado", cascade = CascadeType.ALL)
+    private List<ArticuloManufacturadoPrecioVenta> preciosVentas;
+
+    @OneToMany(mappedBy = "articuloManufacturado", cascade = CascadeType.ALL)
+    private List<DetalleArticuloManufacturado> detalles;
+
+    @OneToMany(mappedBy = "articuloManufacturado", cascade = CascadeType.ALL)
+    private List<DetallePedido> detallesPedidos;
+    @Column(name = "bloqueado")
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+    private Boolean bloqueado;
 }

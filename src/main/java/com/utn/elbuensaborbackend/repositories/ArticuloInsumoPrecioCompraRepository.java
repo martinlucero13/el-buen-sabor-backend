@@ -11,4 +11,9 @@ public interface ArticuloInsumoPrecioCompraRepository extends BaseRepository<Art
     @Query(value = "SELECT * FROM articulo_insumo_precio_compra" +
             " WHERE articulo_insumo_id = :articuloInsumoId ORDER BY fecha DESC LIMIT 1", nativeQuery = true)
     ArticuloInsumoPrecioCompra findByInsumoId(@Param("articuloInsumoId") Long articuloInsumoId);
+
+    @Query("SELECT aipc.monto FROM ArticuloInsumoPrecioCompra aipc " +
+            "WHERE aipc.articuloInsumo.id = :articuloInsumoId " +
+            "ORDER BY aipc.fecha DESC LIMIT 1")
+    Double findLastByInsumoId(@Param("articuloInsumoId") Long articuloInsumoId);
 }

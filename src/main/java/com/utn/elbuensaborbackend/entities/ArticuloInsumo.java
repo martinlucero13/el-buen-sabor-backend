@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
-
-import java.util.List;
 
 @Entity
 @Table(name = "articulo_insumo")
@@ -32,4 +29,14 @@ public class ArticuloInsumo extends Base {
     @JoinColumn(name = "rubro_id")
     @JsonIgnore
     private Rubro rubro;
+
+    @Column(name = "bloqueado")
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+    private Boolean bloqueado;
+
+    @Column(name = "stock_actual")
+    private Float stockActual;
+
+    @Column(name = "stock_minimo")
+    private Float stockMinimo;
 }

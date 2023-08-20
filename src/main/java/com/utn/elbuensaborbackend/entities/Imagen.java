@@ -1,5 +1,6 @@
 package com.utn.elbuensaborbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +16,8 @@ public class Imagen extends Base {
     @Column(name = "nombre")
 	private String nombre;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "articulo_manufacturado_id")
+    @JsonIgnore
 	private ArticuloManufacturado articuloManufacturado;
 }
