@@ -49,19 +49,27 @@ public class ImagenServiceImpl extends BaseServiceImpl<Imagen, ImagenDTO, Long> 
 
     @Override
     public void saveImage(MultipartFile file, String nombre) throws Exception {
-       try {
-           if (!ImagenUtil.isImage(file) || !ImagenUtil.isSizeAcceptable(file)) {
-               throw new Exception("El archivo no es una imagen o su tamaño es demasiado grande");
-           }
-           String fileName = ImagenUtil.generateName(nombre);
+        System.out.println("ENTRA");
+        try {
+            if (!ImagenUtil.isImage(file) || !ImagenUtil.isSizeAcceptable(file)) {
+                throw new Exception("El archivo no es una imagen o su tamaño es demasiado grande");
+            }
+            //String fileName = ImagenUtil.generateName(nombre);
 
-           Path path = Paths.get("images").toAbsolutePath();
-           String filePath = path + File.separator + fileName;
+            Path path = Paths.get("images").toAbsolutePath();
+            String filePath = path + File.separator + nombre;
+            System.out.println(path);
+            System.out.println(filePath);
+            File dest = new File(filePath);
+            if (!dest.exists()) {
+                System.out.println("Entra a guardar");
+                file.transferTo(dest);
+            } else {
+                System.out.println("Imagen ya existente...");
+            }
 
-           File dest = new File(fileName);
-           file.transferTo(dest);
-       } catch (Exception e) {
-           throw new Exception(e.getMessage());
-       }
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 }
