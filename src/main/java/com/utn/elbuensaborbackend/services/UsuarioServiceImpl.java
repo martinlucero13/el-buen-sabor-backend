@@ -74,4 +74,22 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario, UsuarioDTO, Lon
         }
     }
 
+    @Override
+    public Boolean existsByEmail(String email) throws Exception {
+        try {
+            Usuario usuario = usuarioRepository.findByEmail(email);
+            return usuario != null ? true : false;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @Override
+    public Integer findCantidadByRol(Long rolId) throws Exception {
+        try {
+            return usuarioRepository.findCantidadByRol(rolId);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
 }

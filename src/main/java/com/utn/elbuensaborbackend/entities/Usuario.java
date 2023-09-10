@@ -24,4 +24,12 @@ public class Usuario extends Base {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rol_id")
     private Rol rol;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "bloqueado")
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+    private Boolean bloqueado;
+
 }

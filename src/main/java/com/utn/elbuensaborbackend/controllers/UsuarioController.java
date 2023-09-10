@@ -6,6 +6,7 @@ import com.utn.elbuensaborbackend.services.UsuarioServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,6 +34,29 @@ public class UsuarioController extends BaseControllerImpl<Usuario, UsuarioDTO> {
                     .body(service.updateUsuario(id, dto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("{\"error\": \"Ocurrio un error\"}");
+        }
+    }
+
+    @GetMapping("/exists/{email}")
+    @PreAuthorize("hasAuthority('Admin')")
+    public ResponseEntity<?> existsByEmail(@PathVariable String email) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(service.existsByEmail(email));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Ocurrio un error\"}");
+        }
+    }
+
+    @GetMapping("/cantidadByRol/{rolId}")
+    public ResponseEntity<?> getCantidadByRol(@PathVariable Long rolId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(service.findCantidadByRol(rolId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
