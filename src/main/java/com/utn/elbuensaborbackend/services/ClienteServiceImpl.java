@@ -1,21 +1,21 @@
 package com.utn.elbuensaborbackend.services;
 
-import com.utn.elbuensaborbackend.dtos.*;
-import com.utn.elbuensaborbackend.entities.*;
+import com.utn.elbuensaborbackend.dtos.ClienteDTO;
+import com.utn.elbuensaborbackend.entities.Cliente;
+import com.utn.elbuensaborbackend.entities.Pedido;
+import com.utn.elbuensaborbackend.entities.Usuario;
 import com.utn.elbuensaborbackend.mappers.BaseMapper;
 import com.utn.elbuensaborbackend.mappers.ClienteMapper;
-import com.utn.elbuensaborbackend.repositories.*;
+import com.utn.elbuensaborbackend.repositories.BaseRepository;
+import com.utn.elbuensaborbackend.repositories.ClienteRepository;
+import com.utn.elbuensaborbackend.repositories.PedidoRepository;
 import com.utn.elbuensaborbackend.services.interfaces.ClienteService;
-import com.utn.elbuensaborbackend.services.interfaces.DomicilioService;
-import com.utn.elbuensaborbackend.services.interfaces.UsuarioService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 
 @Service
 public class ClienteServiceImpl extends BaseServiceImpl<Cliente, ClienteDTO, Long> implements ClienteService {
@@ -24,22 +24,7 @@ public class ClienteServiceImpl extends BaseServiceImpl<Cliente, ClienteDTO, Lon
     private ClienteRepository clienteRepository;
 
     @Autowired
-    private UsuarioService usuarioService;
-
-    @Autowired
-    private DomicilioService domicilioService;
-
-    @Autowired
-    private DomicilioRepository domicilioRepository;
-
-    @Autowired
-    private LocalidadRepository localidadRepository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private RolRepository rolRepository;
+    private PedidoRepository pedidoRepository;
     private final ClienteMapper clienteMapper = ClienteMapper.getInstance();
 
     public ClienteServiceImpl(BaseRepository<Cliente, Long> baseRepository, BaseMapper<Cliente, ClienteDTO> baseMapper) {
@@ -47,159 +32,71 @@ public class ClienteServiceImpl extends BaseServiceImpl<Cliente, ClienteDTO, Lon
     }
 
     @Override
-    public List<ClienteDTO> findAll() throws Exception {
+    public List<ClienteDTO> findAllEmpleados() throws Exception {
         try {
-            List<Cliente> clientes = clienteRepository.findAll();
-            List<ClienteDTO> clienteDTOs = new ArrayList<>();
+            List<Cliente> clientes = clienteRepository.findAllClientesWithRolEmpleado();
+            return clienteMapper.toDTOsList(clientes);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
 
-            for (Cliente am : clientes) {
-                ClienteDTO clienteDTO = mapClienteToDTO(am);
-                clienteDTOs.add(clienteDTO);
+    @Override
+    public List<ClienteDTO> findAllClientes() throws Exception {
+        try {
+            List<Cliente> clientes = clienteRepository.findAllClientesWithRolCliente();
+            return clienteMapper.toDTOsList(clientes);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @Override
+    public ClienteDTO findClienteByPedido(Long pedidoId) throws Exception {
+        try {
+            Optional<Pedido> optionalPedido = pedidoRepository.findById(pedidoId);
+
+            if (optionalPedido.isPresent()) {
+                Pedido pedido = optionalPedido.get();
+                Cliente cliente = pedido.getCliente();
+
+                return clienteMapper.toDTO(cliente);
+            } else {
+                return null;
             }
-
-            return clienteDTOs;
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
     }
+
     @Override
-    public List<ClienteDTO> findAllClientesByRoles(List<String> roles) throws Exception {
+    public ClienteDTO findClienteByUsuarioAuth0Id(String auht0Id) throws Exception {
         try {
-            List<Cliente> clientes = clienteRepository.findAllClientesByRoles(roles);
-            return clienteMapper.toDTOsList(clientes);
+            Cliente cliente = clienteRepository.findClienteByUsuarioAuth0Id(auht0Id);
+            return clienteMapper.toDTO(cliente);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
     }
 
     @Override
-    public List<ClienteDTO> findAllClientesByName(String nombre) throws Exception {
-        try{
-            List<Cliente> clientes = clienteRepository.findAllClientesByName(nombre);
-            return clienteMapper.toDTOsList(clientes);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
-
-    @Override
-    public List<ClienteDTO> findAllClientesByApellido(String apellido) throws Exception {
-        try{
-            List<Cliente> clientes = clienteRepository.findAllClientesByApellido(apellido);
-            return clienteMapper.toDTOsList(clientes);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
-
-    @Override
-    public List<ClienteDTO> findAllClientesByNameAndApellido(String nombre, String apellido) throws Exception {
-        try{
-            List<Cliente> clientes = clienteRepository.findAllClientesByNameAndApellido(nombre, apellido);
-            return clienteMapper.toDTOsList(clientes);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
-
     @Transactional
-    public Cliente saveCliente(ClienteDTO dto) throws Exception {
-        try {
-            Cliente cliente = clienteMapper.toEntity(dto);
-
-            UsuarioDTO usuarioDTO = dto.getUsuario();
-            if (usuarioDTO != null && usuarioDTO.getId() == null) {
-                Usuario usuario = usuarioService.save(usuarioDTO);
-                cliente.setUsuario(usuario);
-            }
-
-            DomicilioDTO domicilioDTO = dto.getDomicilio();
-            if (domicilioDTO != null && domicilioDTO.getId() == null) {
-                Domicilio domicilio = domicilioService.save(domicilioDTO);
-                cliente.setDomicilio(domicilio);
-            }
-
-            return clienteRepository.save(cliente);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
-
-    @Transactional
-    public Cliente updateCliente(Long id, ClienteDTO dto) throws Exception {
+    public ClienteDTO updateEstado(Long id) throws Exception {
         try {
             Optional<Cliente> optional = clienteRepository.findById(id);
 
             if (optional.isEmpty()) {
-                throw new Exception("El Cliente a modificar no existe.");
+                throw new Exception("El Cliente a actualizar no existe.");
             }
 
             Cliente cliente = optional.get();
+            Usuario usuario = cliente.getUsuario();
+            usuario.setBloqueado(!usuario.getBloqueado());
+            cliente.setUsuario(usuario);
 
-            UsuarioDTO usuarioDTO = dto.getUsuario();
-            if (usuarioDTO.getId() == null) {
-                Usuario usuario = usuarioService.save(usuarioDTO);
-                cliente.setUsuario(usuario);
-            } else {
-                Usuario usuario = usuarioService.update(id, usuarioDTO);
-                cliente.setUsuario(usuario);
-            }
-
-            DomicilioDTO domicilioDTO = dto.getDomicilio();
-            if (domicilioDTO.getId() == null) {
-                Domicilio domicilio = domicilioService.save(domicilioDTO);
-                cliente.setDomicilio(domicilio);
-            } else {
-                Domicilio domicilio = domicilioService.update(domicilioDTO.getId(), domicilioDTO);
-                cliente.setDomicilio(domicilio);
-            }
-
-            return clienteRepository.save(cliente);
+            return clienteMapper.toDTO(clienteRepository.save(cliente));
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-    }
-
-    private ClienteDTO mapClienteToDTO(Cliente cliente) {
-
-
-
-        ClienteDTO clienteDTO = new ClienteDTO();
-        clienteDTO.setId(cliente.getId());
-        clienteDTO.setNombre(cliente.getNombre());
-        clienteDTO.setApellido(cliente.getApellido());
-        clienteDTO.setTelefono(cliente.getTelefono());
-
-        Domicilio domicilio = domicilioRepository.findByClienteId(cliente.getId());
-        DomicilioDTO domicilioDTO = new DomicilioDTO();
-        domicilioDTO.setId(domicilio.getId());
-        domicilioDTO.setCalle(domicilio.getCalle());
-        domicilioDTO.setNumero(domicilio.getNumero());
-
-        Localidad localidad = localidadRepository.findByDomicilioId(domicilio.getId());
-        LocalidadDTO localidadDTO = new LocalidadDTO();
-        localidadDTO.setId(localidad.getId());
-        localidadDTO.setNombre(localidad.getNombre());
-
-        domicilioDTO.setLocalidad(localidadDTO);
-
-        Usuario usuario = usuarioRepository.findByClienteId(cliente.getId());
-        UsuarioDTO usuarioDTO = new UsuarioDTO();
-        usuarioDTO.setId(usuario.getId());
-        usuarioDTO.setClave(usuario.getClave());
-        usuarioDTO.setUsuario(usuario.getUsuario());
-
-        Rol rol = rolRepository.findByUsuarioId(usuario.getId());
-        RolDTO rolDTO = new RolDTO();
-        rolDTO.setId(rol.getId());
-        rolDTO.setDenominacion(rol.getDenominacion());
-
-        usuarioDTO.setRol(rolDTO);
-
-        clienteDTO.setDomicilio(domicilioDTO);
-        clienteDTO.setUsuario(usuarioDTO);
-
-
-        return clienteDTO;
     }
 }

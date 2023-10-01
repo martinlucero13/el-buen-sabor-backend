@@ -25,15 +25,15 @@ public class MercadoPagoDatos extends Base {
 	@Temporal(TemporalType.TIME)
 	private Date fechaAprobacion;
 
-	@Column(name = "forma_pago", length=50)
+	@Column(name = "forma_pago")
 	private String formaPago;
 
-	@Column(name = "metodo_pago", length=50)
+	@Column(name = "metodo_pago")
 	private String metodoPago;
 
-	@Column(name = "nro_tarjeta", length=50)
+	@Column(name = "nro_tarjeta")
 	private String nroTarjeta;
 
-	@Column(name = "estado", length=20)
+	@Column(name = "estado")
 	private String estado;
 }

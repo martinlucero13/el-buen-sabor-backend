@@ -1,10 +1,8 @@
 package com.utn.elbuensaborbackend.services;
 
-
 import com.utn.elbuensaborbackend.dtos.ImagenDTO;
 import com.utn.elbuensaborbackend.entities.Imagen;
 import com.utn.elbuensaborbackend.mappers.BaseMapper;
-import com.utn.elbuensaborbackend.mappers.DomicilioMapper;
 import com.utn.elbuensaborbackend.mappers.ImagenMapper;
 import com.utn.elbuensaborbackend.repositories.BaseRepository;
 import com.utn.elbuensaborbackend.repositories.ImagenRepository;
@@ -27,12 +25,13 @@ public class ImagenServiceImpl extends BaseServiceImpl<Imagen, ImagenDTO, Long> 
     private ImagenRepository imagenRepository;
 
     private final ImagenMapper imagenMapper = ImagenMapper.getInstance();
+
     public ImagenServiceImpl(BaseRepository<Imagen, Long> baseRepository, BaseMapper<Imagen, ImagenDTO> baseMapper) {
-        super(baseRepository,baseMapper);
+        super(baseRepository, baseMapper);
     }
 
     @Override
-    public Resource findImagenByName(String nombre) throws Exception {
+    public Resource findByName(String nombre) throws Exception {
         try {
             Path path = Paths.get("images").toAbsolutePath().resolve(nombre);
             Resource resource = new UrlResource(path.toUri());
@@ -48,26 +47,27 @@ public class ImagenServiceImpl extends BaseServiceImpl<Imagen, ImagenDTO, Long> 
     }
 
     @Override
-    public void saveImage(MultipartFile file, String nombre) throws Exception {
-        System.out.println("ENTRA");
+    public void saveImagen(MultipartFile file, String nombre) throws Exception {
+       try {
+           if (!ImagenUtil.isImage(file) || !ImagenUtil.isSizeAcceptable(file)) {
+               throw new Exception("El archivo no es una imagen o su tamaño es demasiado grande");
+           }
+
+           Path path = Paths.get("images").toAbsolutePath();
+           String filePath = path + File.separator + nombre;
+
+           File dest = new File(filePath);
+           file.transferTo(dest);
+       } catch (Exception e) {
+           throw new Exception(e.getMessage());
+       }
+    }
+
+    @Override
+    public void deleteImagen(String nombre) throws Exception {
         try {
-            if (!ImagenUtil.isImage(file) || !ImagenUtil.isSizeAcceptable(file)) {
-                throw new Exception("El archivo no es una imagen o su tamaño es demasiado grande");
-            }
-            //String fileName = ImagenUtil.generateName(nombre);
-
-            Path path = Paths.get("images").toAbsolutePath();
-            String filePath = path + File.separator + nombre;
-            System.out.println(path);
-            System.out.println(filePath);
-            File dest = new File(filePath);
-            if (!dest.exists()) {
-                System.out.println("Entra a guardar");
-                file.transferTo(dest);
-            } else {
-                System.out.println("Imagen ya existente...");
-            }
-
+            File imagen = findByName(nombre).getFile();
+            imagen.delete();
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }

@@ -1,11 +1,8 @@
 package com.utn.elbuensaborbackend.mappers;
 
 import com.utn.elbuensaborbackend.dtos.pedido.DetallePedidoDTO;
-import com.utn.elbuensaborbackend.entities.ArticuloManufacturado;
-import com.utn.elbuensaborbackend.entities.DetallePedido;
-import com.utn.elbuensaborbackend.entities.Pedido;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import com.utn.elbuensaborbackend.entities.*;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")

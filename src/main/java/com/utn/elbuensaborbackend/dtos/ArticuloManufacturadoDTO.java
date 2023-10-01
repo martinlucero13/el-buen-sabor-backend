@@ -1,27 +1,19 @@
 package com.utn.elbuensaborbackend.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.sql.Time;
 import java.util.List;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class ArticuloManufacturadoDTO extends BaseDTO{
+@Data
+public class ArticuloManufacturadoDTO extends BaseDTO {
 
     private String denominacion;
-
     private String descripcion;
-
+    private String categoria;
+    private String imagen;
+    private Integer stock;
+    private Double precioVenta;
     private Time tiempoEstimadoCocina;
-
-    private ImagenDTO imagen;
-
-    private ArticuloManufacturadoPrecioVentaDTO articuloManufacturadoPrecioVenta;
-
-    private RubroDTO rubro;
-
-    private RecetaDTO receta;
+    private List<DetalleArticuloManufacturadoDTO> detalles;
 }

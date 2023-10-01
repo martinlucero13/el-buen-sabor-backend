@@ -34,19 +34,4 @@ public class ImagenUtil {
         return file.getSize() <= 10 * 1024 * 1024;
     }
 
-    /**
-     * Genera un nuevo nombre combinando la fecha y hora actual con la extensión del archivo
-     *
-     * @param nombre: Nombre original del archivo, incluyendo la extensión.
-     * @return el nuevo nombre de archivo generado que combina la fecha y hora actual con la extensión original.
-     */
-    public static String generateName(String nombre) {
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-        String formattedDateTime = currentDateTime.format(formatter);
-
-        String extension = nombre.substring(nombre.lastIndexOf("."));
-
-        return formattedDateTime + extension;
-    }
 }

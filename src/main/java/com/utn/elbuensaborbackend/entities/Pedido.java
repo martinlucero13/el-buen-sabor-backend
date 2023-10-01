@@ -1,12 +1,11 @@
 package com.utn.elbuensaborbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.utn.elbuensaborbackend.enums.EstadoPedido;
 import com.utn.elbuensaborbackend.enums.FormaPago;
 import com.utn.elbuensaborbackend.enums.TipoEnvio;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,34 +17,13 @@ import java.util.List;
 @AttributeOverride(name = "id", column = @Column(name = "id_pedido"))
 public class Pedido extends Base {
 
-    @Column(name = "fecha")
+    @Column(name = "fecha_pedido")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
 
-    @Column(name = "hora_estimada_fin")
-    @Temporal(TemporalType.TIME)
-    private Date horaEstimadaFin;
-
-    @Column(name = "monto_descuento")
-    private Double montoDescuento;
-
-    @Column(name = "pagado")
-    private boolean pagado;
-
     @Column(name = "estado")
-    private String estado;
-
-    @ManyToOne
-    @JoinColumn(name = "cliente_id")
-    private Cliente cliente;
-
-    @ManyToOne
-    @JoinColumn(name = "tipo_entrega_pedido_id")
-    private TipoEntregaPedido tipoEntregaPedido;
-
-    @ManyToOne
-    @JoinColumn(name = "tipo_pago_pedido_id")
-    private TipoPagoPedido tipoPagoPedido;
+    @Enumerated(EnumType.STRING)
+    private EstadoPedido estado;
 
     @Column(name = "forma_pago")
     @Enumerated(EnumType.STRING)
@@ -69,6 +47,11 @@ public class Pedido extends Base {
 
     @Column(name = "tiempo_estimado_pedido")
     private String tiempoEstimadoPedido;
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "pedido_id")

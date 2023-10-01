@@ -1,88 +1,105 @@
 package com.utn.elbuensaborbackend.controllers;
 
-
-import com.utn.elbuensaborbackend.dtos.ArticuloInsumoDTO;
-import com.utn.elbuensaborbackend.dtos.ArticuloManufacturadoDTO;
+import com.utn.elbuensaborbackend.dtos.ArticuloInsumoFullDTO;
+import com.utn.elbuensaborbackend.dtos.ArticuloInsumoUpdateDTO;
 import com.utn.elbuensaborbackend.entities.ArticuloInsumo;
-import com.utn.elbuensaborbackend.entities.ArticuloManufacturado;
-import com.utn.elbuensaborbackend.services.ArticuloInsumoServiceImpl;
+import com.utn.elbuensaborbackend.services.interfaces.ArticuloInsumoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/articulos-insumos")
-public class ArticuloInsumoController {
+public class ArticuloInsumoController extends BaseControllerImpl<ArticuloInsumo, ArticuloInsumoFullDTO> {
 
     @Autowired
-    private ArticuloInsumoServiceImpl service;
+    private ArticuloInsumoService service;
 
+    @Override
     @GetMapping("")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Cocinero')")
     public ResponseEntity<?> getAll() {
         try {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(service.findAll());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los ingredientes\"}");
+                    .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
-    @GetMapping("/bebidas")
-    public ResponseEntity<?> getBebidas() {
-        try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(service.findBebidas());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los ingredientes\"}");
-        }
-    }
-
+    @Override
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Cocinero')")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(service.findById(id));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los ingredientes por Id\"}");
-        }
-    }
-
-    @PostMapping("")
-    public ResponseEntity<?> save(@RequestBody ArticuloInsumoDTO entity) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(service.save(entity));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ArticuloInsumoDTO entity) {
+    @GetMapping("/activos")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Cocinero')")
+    public ResponseEntity<?> getAllActivos() {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(service.update(id, entity));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\": \"Ocurrio un error\"}");
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        try {
-            service.delete(id);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body("");
+                    .body(service.findAllActivos());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
+    @GetMapping("/simple")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Cocinero')")
+    public ResponseEntity<?> getAllSimple() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(service.findAllSimple());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Ocurrio un error\"}");
+        }
+    }
+
+    @GetMapping("/simple/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Cocinero')")
+    public ResponseEntity<?> getSimpleById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(service.findSimpleById(id));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Ocurrio un error\"}");
+        }
+    }
+
+    @PutMapping("/updateEstado/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Cocinero')")
+    public ResponseEntity<?> updateEstado(@PathVariable Long id) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(service.updateEstado(id));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Ocurrio un error\"}");
+        }
+    }
+
+    @PutMapping("/updateStock/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Cocinero')")
+    public ResponseEntity<?> updateStock(@PathVariable Long id, @RequestBody ArticuloInsumoUpdateDTO dto) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(service.updateStock(id, dto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Ocurrio un error\"}");
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package com.utn.elbuensaborbackend.services;
 
-import com.utn.elbuensaborbackend.dtos.ArticuloManufacturadoDTO;
-import com.utn.elbuensaborbackend.dtos.DetallePedidoDTO;
+import com.utn.elbuensaborbackend.dtos.pedido.DetallePedidoDTO;
 import com.utn.elbuensaborbackend.dtos.pedido.MovimientosMonetariosDTO;
 import com.utn.elbuensaborbackend.entities.*;
 import com.utn.elbuensaborbackend.mappers.BaseMapper;
@@ -16,17 +15,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DetallePedidoServiceImpl
-        extends BaseServiceImpl<DetallePedido, com.utn.elbuensaborbackend.dtos.pedido.DetallePedidoDTO, Long> implements DetallePedidoService {
-
-    @Autowired
-    private DetallePedidoRepository detallePedidoRepository;
-
-    @Autowired
-    private ArticuloManufacturadoServiceImpl articuloManufacturadoServiceImpl;
-
+        extends BaseServiceImpl<DetallePedido, DetallePedidoDTO, Long> implements DetallePedidoService {
     @Autowired
     private ArticuloInsumoPrecioCompraRepository precioCompraRepository;
 
@@ -37,42 +30,37 @@ public class DetallePedidoServiceImpl
     private PedidoRepository pedidoRepository;
 
     @Autowired
+    private DetallePedidoRepository detallePedidoRepository;
+
+    @Autowired
     private ArticuloInsumoRepository articuloInsumoRepository;
 
     private DetallePedidoMapper detallePedidoMapper = DetallePedidoMapper.getInstance();
 
     @Autowired
     private PedidoRepository pedidoService;
+    public DetallePedidoServiceImpl(BaseRepository<DetallePedido, Long> baseRepository,
+                                    BaseMapper<DetallePedido, DetallePedidoDTO> baseMapper) {
+        super(baseRepository, baseMapper);
+    }
 
+    @Override
     public List<DetallePedidoDTO> findByPedidoId(Long pedidoId) throws Exception {
         try {
             List<DetallePedido> detallePedidos = detallePedidoRepository.findByPedidoId(pedidoId);
-            List<DetallePedidoDTO> detallePedidoDTO = new ArrayList<>();
-            for (DetallePedido dp : detallePedidos) {
-                DetallePedidoDTO dpDto = new DetallePedidoDTO();
-                dpDto.setId(dp.getId());
-                dpDto.setCantidad(dp.getCantidad());
-                dpDto.setSubTotal(dp.getSubtotal());
-                ArticuloManufacturadoDTO articuloManufacturado = articuloManufacturadoServiceImpl.findById(dp.getArticuloManufacturado().getId());
-                dpDto.setArticuloManufacturado(articuloManufacturado);
-                detallePedidoDTO.add(dpDto);
-            }
-            return detallePedidoDTO;
-
+            return detallePedidos.stream()
+                    .map(detallePedidoMapper::toDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new Exception(e.getMessage());
         }
     }
-    public DetallePedidoServiceImpl(BaseRepository<DetallePedido, Long> baseRepository,
-                                    BaseMapper<DetallePedido, com.utn.elbuensaborbackend.dtos.pedido.DetallePedidoDTO> baseMapper) {
-        super(baseRepository, baseMapper);
-    }
+
     @Override
     @Transactional
-    public void saveCompraArticulos(List<com.utn.elbuensaborbackend.dtos.pedido.DetallePedidoDTO> productos) throws Exception {
+    public void saveCompraArticulos(List<DetallePedidoDTO> productos) throws Exception {
         try {
-            for (com.utn.elbuensaborbackend.dtos.pedido.DetallePedidoDTO producto : productos) {
+            for (DetallePedidoDTO producto : productos) {
                 Long articuloManufacturadoId = producto.getArticuloManufacturado();
                 Integer cantidad = producto.getCantidad();
 
@@ -99,11 +87,11 @@ public class DetallePedidoServiceImpl
         }
     }
 
-    public List<com.utn.elbuensaborbackend.dtos.pedido.DetallePedidoDTO> saveItems(List<com.utn.elbuensaborbackend.dtos.pedido.DetallePedidoDTO> items) throws Exception {
+    public List<DetallePedidoDTO> saveItems(List<DetallePedidoDTO> items) throws Exception {
         try {
-            List<com.utn.elbuensaborbackend.dtos.pedido.DetallePedidoDTO> savedItems = new ArrayList<>();
+            List<DetallePedidoDTO> savedItems = new ArrayList<>();
 
-            for (com.utn.elbuensaborbackend.dtos.pedido.DetallePedidoDTO itemDTO : items) {
+            for (DetallePedidoDTO itemDTO : items) {
                 DetallePedido detallePedido = detallePedidoMapper.toEntity(itemDTO);
                 ArticuloManufacturado articulo =
                         articuloManufacturadoRepository.findById(itemDTO.getArticuloManufacturado()).orElse(null);

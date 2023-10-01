@@ -1,31 +1,23 @@
 package com.utn.elbuensaborbackend.services.interfaces;
 
-
-import com.utn.elbuensaborbackend.dtos.PedidoDTO;
+import com.utn.elbuensaborbackend.dtos.pedido.PedidoDTO;
 import com.utn.elbuensaborbackend.entities.Pedido;
+import com.utn.elbuensaborbackend.enums.EstadoPedido;
 
-import java.util.Date;
 import java.util.List;
 
-public interface PedidoService {
-    List<PedidoDTO> findAll() throws Exception;
+public interface PedidoService extends BaseService<Pedido, PedidoDTO, Long> {
 
-    PedidoDTO findById(Long id) throws  Exception;
+    List<PedidoDTO> findAllByEstado(EstadoPedido estado) throws Exception;
+    List<PedidoDTO> findAllByCliente(Long id) throws Exception;
 
-    List<PedidoDTO> findByTermino(String termino) throws Exception;
+    List<Pedido> findPedidosEnCocina() throws Exception;
 
-    List<PedidoDTO> findByCliente(Long idCliente) throws Exception;
+    Pedido updateEstado(Long id, EstadoPedido estado) throws Exception;
 
-    List<PedidoDTO> findByEstado(String estado) throws Exception;
+    void updateStock(Long pedidoId) throws Exception;
 
-    Pedido save(PedidoDTO entity) throws Exception;
+    Pedido updateTiempo(Long id, String tiempo) throws Exception;
 
-    Pedido update(Long id, PedidoDTO entity) throws Exception;
-
-    PedidoDTO updateFecha(Long id, PedidoDTO entity) throws Exception;
-
-    PedidoDTO updateEstado(Long id, String estado) throws Exception;
-
-    void delete(Long id) throws Exception;
-
+    int findTiempoCocina() throws Exception;
 }

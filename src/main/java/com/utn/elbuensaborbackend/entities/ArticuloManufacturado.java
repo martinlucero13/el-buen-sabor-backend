@@ -15,11 +15,15 @@ import java.util.List;
 @AttributeOverride(name = "id", column = @Column(name = "id_articulo_manufacturado"))
 public class ArticuloManufacturado extends Base {
 
-    @Column(name = "denominacion", length = 20)
+    @Column(name = "denominacion")
 	private String denominacion;
 
     @Column(name = "descripcion")
     private String descripcion;
+
+    @Column(name = "bloqueado")
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+    private Boolean bloqueado;
 
     @Column(name = "tiempo_estimado_cocina")
     @Temporal(TemporalType.TIME)
@@ -43,7 +47,4 @@ public class ArticuloManufacturado extends Base {
 
     @OneToMany(mappedBy = "articuloManufacturado", cascade = CascadeType.ALL)
     private List<DetallePedido> detallesPedidos;
-    @Column(name = "bloqueado")
-    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
-    private Boolean bloqueado;
 }

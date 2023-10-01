@@ -15,6 +15,6 @@ public class Rol extends Base {
     @Column(name = "auth0_rol_id")
     private String auth0RolId;
 
-    @Column(name = "denominacion", nullable = false, length = 20)
+    @Column(name = "denominacion")
     private String denominacion;
 }

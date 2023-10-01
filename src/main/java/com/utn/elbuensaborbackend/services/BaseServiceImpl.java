@@ -11,6 +11,13 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Clase abstracta que implementa la interfaz BaseService para proporcionar funcionalidades básicas de CRUD.
+ *
+ * @param <E> Tipo de Entidad que extiende de Base.
+ * @param <D> Tipo de DTO que extiende de BaseDTO.
+ * @param <ID> Tipo de ID que implementa Serializable.
+ */
 public abstract class BaseServiceImpl<E extends Base, D extends BaseDTO, ID extends Serializable>
         implements BaseService<E, D, ID> {
 
@@ -23,6 +30,12 @@ public abstract class BaseServiceImpl<E extends Base, D extends BaseDTO, ID exte
         this.baseMapper = baseMapper;
     }
 
+    /**
+     * Obtiene una lista de todos los DTOs de la entidad Base.
+     *
+     * @return List de DTOs de la entidad Base.
+     * @throws Exception si ocurre algún error durante la operación.
+     */
     @Override
     public List<D> findAll() throws Exception {
         try {
@@ -33,6 +46,13 @@ public abstract class BaseServiceImpl<E extends Base, D extends BaseDTO, ID exte
         }
     }
 
+    /**
+     * Obtiene el DTO de la entidad Base correspondiente al ID proporcionado.
+     *
+     * @param id ID de la entidad Base.
+     * @return DTO de la entidad Base correspondiente al ID proporcionado.
+     * @throws Exception si ocurre algún error durante la operación.
+     */
     @Override
     public D findById(ID id) throws Exception {
         try {
@@ -43,6 +63,31 @@ public abstract class BaseServiceImpl<E extends Base, D extends BaseDTO, ID exte
         }
     }
 
+    /**
+     * Busca una entidad específica por su ID y devuelve una instancia Optional del objeto.
+     *
+     * @param id ID de la entidad a buscar.
+     * @return Una instancia Optional que contiene la entidad correspondiente al ID proporcionado.
+     * @throws Exception si ocurre algún error durante la operación.
+     */
+    @Override
+    @Transactional
+    public Optional<E> findOptionalById(ID id) throws Exception {
+        try {
+            E entity = baseRepository.findById(id).get();
+            return Optional.ofNullable(entity);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    /**
+     * Guarda la entidad Base correspondiente al DTO proporcionado.
+     *
+     * @param dto DTO de la entidad Base a guardar.
+     * @return La entidad Base guardada.
+     * @throws Exception si ocurre algún error durante la operación.
+     */
     @Override
     @Transactional
     public E save(D dto) throws Exception {
@@ -53,6 +98,14 @@ public abstract class BaseServiceImpl<E extends Base, D extends BaseDTO, ID exte
         }
     }
 
+    /**
+     * Actualiza la entidad Base correspondiente al ID proporcionado con los datos del DTO proporcionado.
+     *
+     * @param id ID de la entidad Base a actualizar.
+     * @param dto DTO con los nuevos datos de la entidad Base.
+     * @return La entidad Base actualizada.
+     * @throws Exception si ocurre algún error durante la operación.
+     */
     @Override
     @Transactional
     public E update(ID id, D dto) throws Exception {
@@ -69,6 +122,12 @@ public abstract class BaseServiceImpl<E extends Base, D extends BaseDTO, ID exte
         }
     }
 
+    /**
+     * Elimina la entidad Base correspondiente al ID proporcionado.
+     *
+     * @param id ID de la entidad Base a eliminar.
+     * @throws Exception si ocurre algún error durante la operación.
+     */
     @Override
     @Transactional
     public void delete(ID id) throws Exception {

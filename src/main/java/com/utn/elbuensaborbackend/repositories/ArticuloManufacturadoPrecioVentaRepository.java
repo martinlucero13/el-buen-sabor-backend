@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ArticuloManufacturadoPrecioVentaRepository extends BaseRepository<ArticuloManufacturadoPrecioVenta, Long>{
 
-    @Query(value = "SELECT * FROM articulo_manufacturado_precio_venta " +
-            "WHERE articulo_manufacturado_id = :articuloManufacturadoId ORDER BY fecha DESC LIMIT 1", nativeQuery = true)
-    ArticuloManufacturadoPrecioVenta findByArticuloManufacturadoId(@Param("articuloManufacturadoId") Long articuloManufacturadoId);
-
+    @Query("SELECT apv.monto FROM ArticuloManufacturadoPrecioVenta apv " +
+            "WHERE apv.articuloManufacturado.id = :articuloManufacturadoId " +
+            "ORDER BY apv.fecha DESC LIMIT 1")
+    Double findLastByManufacturado(@Param("articuloManufacturadoId") Long articuloManufacturadoId);
 }

@@ -6,12 +6,8 @@ import lombok.Data;
 public class ClienteDTO extends BaseDTO {
     
     private String nombre;
-
     private String apellido;
-
     private Long telefono;
-
-    private UsuarioDTO usuario;
-
     private DomicilioDTO domicilio;
+    private UsuarioDTO usuario;
 }

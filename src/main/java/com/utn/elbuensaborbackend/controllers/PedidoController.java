@@ -1,131 +1,113 @@
 package com.utn.elbuensaborbackend.controllers;
 
-import com.utn.elbuensaborbackend.dtos.PedidoDTO;
+import com.utn.elbuensaborbackend.dtos.pedido.PedidoDTO;
 import com.utn.elbuensaborbackend.entities.Pedido;
-import com.utn.elbuensaborbackend.services.PedidoServiceImpl;
+import com.utn.elbuensaborbackend.enums.EstadoPedido;
+import com.utn.elbuensaborbackend.services.interfaces.FacturaService;
+import com.utn.elbuensaborbackend.services.interfaces.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/pedidos")
-public class PedidoController {
-    @Autowired
-    private PedidoServiceImpl service;
+public class PedidoController extends BaseControllerImpl<Pedido, PedidoDTO> {
 
-    @GetMapping("")
-    public ResponseEntity<?> getAll() {
+    @Autowired
+    private PedidoService service;
+
+    @Autowired
+    private FacturaService serviceFactura;
+
+    @GetMapping("/filtrados")
+    public ResponseEntity<?> getAllByEstado(@RequestParam(name = "estado", required = false) EstadoPedido estado) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(service.findAll());
+                    .body(service.findAllByEstado(estado));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los pedidos por termino\"}");
+                    .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
     @GetMapping("/byCliente/{id}")
-    public ResponseEntity<?> getByCliente(@PathVariable Long id) {
+    public ResponseEntity<?> getAllByCliente(@PathVariable Long id) {
         try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(service.findByCliente(id));
+            List<PedidoDTO> pedidos = service.findAllByCliente(id);
+            return ResponseEntity.status(HttpStatus.OK).body(pedidos);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los pedidos por termino\"}");
+                    .body("{\"error\": \"Ocurrió un error\"}");
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
+    @GetMapping("/tiempoCocina")
+    public ResponseEntity<?> getTiempoCocina() {
         try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(service.findById(id));
+            int totalMinutos = service.findTiempoCocina();
+            return ResponseEntity.status(HttpStatus.OK).body(totalMinutos);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los pedidos por termino\"}");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 
-    @GetMapping("/byTermino/{termino}")
-    public ResponseEntity<?> getByTermino(@PathVariable String termino) {
+    @PostMapping("/saveFull")
+    @PreAuthorize("hasAuthority('Cliente')")
+    public ResponseEntity<?> saveFull(@RequestBody PedidoDTO pedidoDTO) {
         try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(service.findByTermino(termino));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los pedidos por termino\"}");
-        }
-    }
+            Pedido pedido = service.save(pedidoDTO);
+            serviceFactura.saveFactura(pedido, pedidoDTO.getFactura());
 
-    @GetMapping("/byEstado/{estado}")
-    public ResponseEntity<?> getByEstado(@PathVariable String estado) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(service.findByEstado(estado));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los pedidos por termino\"}");
-        }
-    }
-
-    @PostMapping("")
-    public ResponseEntity<?> save(@RequestBody PedidoDTO entity) {
-        try {
-            Pedido pedido = service.save(entity);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(pedido);
+                    .body(pedido.getId());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\":\"Error al guardar el pedido \"}");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody PedidoDTO entity) {
+    @PutMapping("/updateEstado/{id}")
+    @PreAuthorize("hasAnyAuthority('Cajero', 'Cocinero', 'Delivery', 'Admin')")
+    public ResponseEntity<?> updateEstado(
+            @PathVariable Long id,
+            @RequestParam(name = "estado") EstadoPedido estado) {
         try {
-            Pedido pedido = service.update(id, entity);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(pedido);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\":\"Error al actualizar el pedido \"}");
-        }
-    }
-
-    @PutMapping("/minuto/{id}")
-    public ResponseEntity<?> sumarMinutos(@PathVariable Long id, @RequestBody PedidoDTO entity) {
-        try {
-            PedidoDTO pedido = service.updateFecha(id, entity);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(pedido);
+                    .body(service.updateEstado(id, estado));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\":\"Error al sumar 10 min en pedido \"}");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
-    @PutMapping("/estado/{id}")
-    public ResponseEntity<?> cambiarEstado(@PathVariable Long id, @RequestBody String estado) {
+    @PutMapping("/updateTiempo/{id}")
+    @PreAuthorize("hasAnyAuthority('Cocinero', 'Admin')")
+    public ResponseEntity<?> updateTiempo(
+            @PathVariable Long id,
+            @RequestParam(name = "tiempo") String tiempo) {
         try {
-            PedidoDTO pedido = service.updateEstado(id, estado);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(pedido);
+                    .body(service.updateTiempo(id, tiempo));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\":\"Error al sumar 10 min en pedido \"}");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    @PutMapping("/cancelarPedido/{id}")
+    public ResponseEntity<?> updateStock(@PathVariable Long id) {
         try {
-            service.delete(id);
+            service.updateStock(id);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body("{\"message\":\"Pedido eliminado exitosamente\"}");
+                    .body("Pedido cancelado y stock restaurado exitosamente");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\":\"Error al eliminar el pedido\"}");
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 }

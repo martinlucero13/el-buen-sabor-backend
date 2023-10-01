@@ -13,9 +13,4 @@ public interface UsuarioMapper extends BaseMapper<Usuario, UsuarioDTO> {
     static UsuarioMapper getInstance() {
         return Mappers.getMapper(UsuarioMapper.class);
     }
-
-    UsuarioDTO toDTO(Usuario source);
-    Usuario toEntity(UsuarioDTO source);
-    List<UsuarioDTO> toDTOsList(List<Usuario> source);
-    List<Usuario> toEntitiesList(List<UsuarioDTO> source);
 }

@@ -5,7 +5,6 @@ import com.utn.elbuensaborbackend.entities.Receta;
 
 public interface RecetaService extends BaseService<Receta, RecetaDTO, Long> {
 
-    RecetaDTO findByArticuloManufacturadoId(Long id) throws Exception;
+    RecetaDTO findByArticuloManufacturadoId(Long articuloManufacturadoId) throws Exception;
 
 }
-

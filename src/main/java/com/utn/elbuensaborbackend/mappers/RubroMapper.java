@@ -18,25 +18,10 @@ public interface RubroMapper extends BaseMapper<Rubro, RubroDTO> {
     }
 
     @Mapping(source = "source.rubroPadre.id", target = "rubroPadreId")
+    @Mapping(source = "source.rubroPadre.denominacion", target = "rubroPadreDenominacion")
     RubroDTO toDTO(Rubro source);
 
     @Mapping(target = "rubroPadre", ignore = true)
     @Mapping(target = "subRubros", ignore = true)
     Rubro toEntity(RubroDTO source);
-
-    @IterableMapping(qualifiedByName = "toDTO")
-    List<RubroDTO> toDTOsList(List<Rubro> source);
-
-    @IterableMapping(qualifiedByName = "toEntity")
-    List<Rubro> toEntitiesList(List<RubroDTO> source);
-
-    @Named("toDTO")
-    default RubroDTO toDTO(RubroDTO source) {
-        return source;
-    }
-
-    @Named("toEntity")
-    default Rubro toEntity(Rubro source) {
-        return source;
-    }
 }

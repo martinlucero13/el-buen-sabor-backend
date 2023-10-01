@@ -1,274 +1,156 @@
 package com.utn.elbuensaborbackend.services;
 
-import com.utn.elbuensaborbackend.dtos.*;
-import com.utn.elbuensaborbackend.entities.*;
-import com.utn.elbuensaborbackend.repositories.*;
 
+import com.utn.elbuensaborbackend.dtos.pedido.PedidoDTO;
+
+import com.utn.elbuensaborbackend.entities.*;
+import com.utn.elbuensaborbackend.enums.EstadoPedido;
+import com.utn.elbuensaborbackend.mappers.BaseMapper;
+import com.utn.elbuensaborbackend.repositories.ArticuloInsumoRepository;
+import com.utn.elbuensaborbackend.repositories.BaseRepository;
+import com.utn.elbuensaborbackend.repositories.PedidoRepository;
 import com.utn.elbuensaborbackend.services.interfaces.PedidoService;
+import io.micrometer.common.util.StringUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
-import java.time.LocalTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Service
-public class PedidoServiceImpl implements PedidoService {
+public class PedidoServiceImpl
+        extends BaseServiceImpl<Pedido, PedidoDTO, Long> implements PedidoService {
+
     @Autowired
     private PedidoRepository pedidoRepository;
 
     @Autowired
-    private ClienteRepository clienteRepository;
+    private ArticuloInsumoRepository articuloInsumoRepository;
 
-    @Autowired
-    private TipoEntregaPedidoRepository tipoEntregaPedidoRepository;
-
-    @Autowired
-    private TipoPagoPedidoRepository tipoPagoPedidoRepository;
-
-    @Autowired
-    private DomicilioRepository domicilioRepository;
-
-    @Autowired
-    private LocalidadRepository localidadRepository;
-
+    public PedidoServiceImpl(BaseRepository<Pedido, Long> baseRepository,
+                             BaseMapper<Pedido, PedidoDTO> baseMapper) {
+        super(baseRepository, baseMapper);
+    }
 
     @Override
-    public List<PedidoDTO> findAll() throws Exception {
+    public List<PedidoDTO> findAllByEstado(EstadoPedido estado) throws Exception {
         try {
-            List<Pedido> pedidos = pedidoRepository.findAll();
-            List<PedidoDTO> pedidoDTOs = new ArrayList<>();
+            if (estado != null && StringUtils.isNotBlank(estado.name())) {
+                return baseMapper.toDTOsList(pedidoRepository.findAllByEstado(estado));
+            }
+            return findAll();
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
 
-            for (Pedido am : pedidos) {
-                PedidoDTO pedidoDTO = mapPedidoToDTO(am);
-                pedidoDTOs.add(pedidoDTO);
+    @Override
+    public List<PedidoDTO> findAllByCliente(Long id) throws Exception {
+        try {
+            if (id != null) {
+                return baseMapper.toDTOsList(pedidoRepository.findAllByClienteId(id));
+            }
+            return findAll();
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Pedido> findPedidosEnCocina() throws Exception {
+        try {
+            return pedidoRepository.findAllByEstado(EstadoPedido.PREPARACION);
+        } catch (Exception e) {
+            throw new Exception("Error al obtener los pedidos en cocina: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public int findTiempoCocina() throws Exception {
+        try {
+            List<Pedido> pedidosEnCocina = findPedidosEnCocina();
+
+            int totalMinutos = 0;
+
+            for (Pedido pedido : pedidosEnCocina) {
+                for (DetallePedido detalle : pedido.getDetallesPedidos()) {
+                    ArticuloManufacturado articulo = detalle.getArticuloManufacturado();
+                    totalMinutos += articulo.getTiempoEstimadoCocina().toLocalTime().toSecondOfDay() / 60 * detalle.getCantidad();
+                }
             }
 
-            return pedidoDTOs;
+            return totalMinutos;
+        } catch (Exception e) {
+            throw new Exception("Error al calcular el tiempo estimado de cocina: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    public Pedido updateEstado(Long id, EstadoPedido nuevoEstado) throws Exception {
+        try {
+            Optional<Pedido> optional = pedidoRepository.findById(id);
+
+            if (optional.isEmpty()) {
+                throw new Exception("El Pedido a actualizar no existe.");
+            }
+            Pedido pedido = optional.get();
+
+            pedido.setEstado(nuevoEstado);
+
+            return pedidoRepository.save(pedido);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
     }
 
-    @Override
-    public PedidoDTO findById(Long id) throws Exception {
+    @Transactional
+    public Pedido updateTiempo(Long id, String tiempo) throws Exception {
         try {
-            Pedido pedido = pedidoRepository.findById(id).get();
-            PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
+            Optional<Pedido> optional = pedidoRepository.findById(id);
 
-            return pedidoDTO;
+            if (optional.isEmpty()) {
+                throw new Exception("El Pedido a actualizar no existe.");
+            }
+            Pedido pedido = optional.get();
+
+            pedido.setTiempoEstimadoPedido(tiempo);
+
+            return pedidoRepository.save(pedido);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
     }
-
     @Override
-    public List<PedidoDTO> findByTermino(String termino) throws Exception {
+    @Transactional
+    public void updateStock(Long pedidoId) throws Exception {
         try {
-            List<Pedido> pedidos = pedidoRepository.findByTermino(termino);
-            List<PedidoDTO> pedidoDTOs = new ArrayList<>();
+            Optional<Pedido> pedidoOptional = pedidoRepository.findById(pedidoId);
 
-            for (Pedido pedido : pedidos) {
-                PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
-                pedidoDTOs.add(pedidoDTO);
+            if (pedidoOptional.isEmpty()) {
+                throw new Exception("Pedido no encontrado");
             }
 
-            return pedidoDTOs;
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
+            Pedido pedido = pedidoOptional.get();
 
-    @Override
-    public List<PedidoDTO> findByCliente(Long idCliente) throws Exception {
-        try {
-            List<Pedido> pedidos = pedidoRepository.findByCliente(idCliente);
-            List<PedidoDTO> pedidoDTOs = new ArrayList<>();
-
-            for (Pedido pedido : pedidos) {
-                PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
-                pedidoDTOs.add(pedidoDTO);
+            if (pedido.getEstado() != EstadoPedido.CANCELADO) {
+                throw new Exception("El pedido no está en estado cancelado");
             }
 
-            return pedidoDTOs;
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
+            List<DetallePedido> detalles = pedido.getDetallesPedidos();
+            for (DetallePedido detalle : detalles) {
+                ArticuloManufacturado articulo = detalle.getArticuloManufacturado();
+                Integer cantidad = detalle.getCantidad();
 
-    @Override
-    public List<PedidoDTO> findByEstado(String estado) throws Exception {
-        try {
-            List<Pedido> pedidos = pedidoRepository.findByEstado(estado);
-            List<PedidoDTO> pedidoDTOs = new ArrayList<>();
-
-            for (Pedido pedido : pedidos) {
-                PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
-                pedidoDTOs.add(pedidoDTO);
+                for (DetalleArticuloManufacturado detalleArticulo : articulo.getDetalles()) {
+                    ArticuloInsumo insumo = detalleArticulo.getArticuloInsumo();
+                    float cantidadRequerida = (float) (detalleArticulo.getCantidad() * cantidad);
+                    insumo.setStockActual(insumo.getStockActual() + cantidadRequerida);
+                    articuloInsumoRepository.save(insumo);
+                }
             }
-
-            return pedidoDTOs;
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
-
-    private PedidoDTO mapPedidoToDTO(Pedido pedido) {
-        PedidoDTO pedidoDTO = new PedidoDTO();
-        pedidoDTO.setId(pedido.getId());
-        pedidoDTO.setFecha(pedido.getFecha());
-        pedidoDTO.setHoraEstimadaFin(pedido.getHoraEstimadaFin());
-        pedidoDTO.setMontoDescuento(pedido.getMontoDescuento());
-        pedidoDTO.setPagado(pedido.isPagado());
-        pedidoDTO.setEstado(pedido.getEstado());
-
-        TipoEntregaPedido tipoEntregaPedido = tipoEntregaPedidoRepository.findByPedidoId(pedido.getId());
-
-        TipoEntregaPedidoDTO tipoEntregaPedidoDTO = new TipoEntregaPedidoDTO();
-        tipoEntregaPedidoDTO.setId(tipoEntregaPedido.getId());
-        tipoEntregaPedidoDTO.setDescripcion(tipoEntregaPedido.getDescripcion());
-
-        TipoPagoPedido tipoPagoPedido = tipoPagoPedidoRepository.findByPedidoId(pedido.getId());
-
-        TipoPagoPedidoDTO tipoPagoPedidoDTO = new TipoPagoPedidoDTO();
-        tipoPagoPedidoDTO.setId(tipoPagoPedido.getId());
-        tipoPagoPedidoDTO.setDescripcion(tipoPagoPedido.getDescripcion());
-
-        pedidoDTO.setTipoEntregaPedido(tipoEntregaPedidoDTO);
-        pedidoDTO.setTipoPagoPedido(tipoPagoPedidoDTO);
-
-        Cliente cliente = clienteRepository.findByPedidoId(pedido.getId());
-        ClienteDTO clienteDTO = new ClienteDTO();
-        clienteDTO.setId(cliente.getId());
-        clienteDTO.setNombre(cliente.getNombre());
-        clienteDTO.setApellido(cliente.getApellido());
-        clienteDTO.setTelefono(cliente.getTelefono());
-
-        Domicilio domicilio = domicilioRepository.findByClienteId(cliente.getId());
-        DomicilioDTO domicilioDTO = new DomicilioDTO();
-        domicilioDTO.setId(domicilio.getId());
-        domicilioDTO.setCalle(domicilio.getCalle());
-        domicilioDTO.setNumero(domicilio.getNumero());
-
-        Localidad localidad = localidadRepository.findByDomicilioId(domicilio.getId());
-        LocalidadDTO localidadDTO = new LocalidadDTO();
-        localidadDTO.setId(localidad.getId());
-        localidadDTO.setNombre(localidad.getNombre());
-
-        domicilioDTO.setLocalidad(localidadDTO);
-        clienteDTO.setDomicilio(domicilioDTO);
-
-        pedidoDTO.setCliente(clienteDTO);
-
-        return pedidoDTO;
-    }
-
-    @Override
-    public Pedido save(PedidoDTO entity) throws Exception {
-        try {
-            Pedido pedido = new Pedido();
-            pedido.setFecha(entity.getFecha());
-            pedido.setHoraEstimadaFin(entity.getHoraEstimadaFin());
-            pedido.setMontoDescuento(entity.getMontoDescuento());
-
-            //CLIENTE
-            ClienteDTO clienteDTO = entity.getCliente();
-            Cliente cLiente = new Cliente();
-            cLiente.setId(clienteDTO.getId());
-            pedido.setCliente(cLiente);
-
-            //TIPO ENTREGA PEDIDO
-            TipoEntregaPedidoDTO tipoEntregaPedidoDTO = entity.getTipoEntregaPedido();
-            TipoEntregaPedido tipoEntregaPedido = new TipoEntregaPedido();
-            tipoEntregaPedido.setId(tipoEntregaPedidoDTO.getId());
-            pedido.setTipoEntregaPedido(tipoEntregaPedido);
-
-            //TIPO PAGO PEDIDO
-            TipoPagoPedidoDTO tipoPagoPedidoDTO = entity.getTipoPagoPedido();
-            TipoPagoPedido tipoPagoPedido = new TipoPagoPedido();
-            tipoPagoPedido.setId(tipoPagoPedidoDTO.getId());
-            pedido.setTipoPagoPedido(tipoPagoPedido);
-
-            pedidoRepository.save(pedido);
-
-
-
-            /*articuloManufacturadoPrecioVenta.setFecha(articuloManufacturadoPrecioVentaDTO.getFecha());
-            articuloManufacturadoPrecioVenta.setPrecioVenta(articuloManufacturadoPrecioVentaDTO.getPrecioVenta());
-            articuloManufacturadoPrecioVenta.setArticuloManufacturado(articuloManufacturado);
-            articuloManufacturadoPrecioVentaRepository.save(articuloManufacturadoPrecioVenta);*/
-            return pedido;
-
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
-
-    @Override
-    public Pedido update(Long id, PedidoDTO entity) throws Exception {
-        try {
-            Optional<Pedido> optionalPedido = pedidoRepository.findById(id);
-            if (optionalPedido.isPresent()) {
-                Pedido pedido = optionalPedido.get();
-                pedido.setFecha(entity.getFecha());
-                pedido.setHoraEstimadaFin(entity.getHoraEstimadaFin());
-                pedido.setMontoDescuento(entity.getMontoDescuento());
-
-                return pedidoRepository.save(pedido);
-            }
-            return null;
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
-
-
-    @Override
-    public PedidoDTO updateFecha(Long id, PedidoDTO entity) throws Exception {
-        try {
-            Optional<Pedido> optionalPedido = pedidoRepository.findById(id);
-            if (optionalPedido.isPresent()) {
-                Pedido pedido = optionalPedido.get();
-                Time horaEstimadaFin = Time.valueOf(pedido.getHoraEstimadaFin().toString());
-                LocalTime localTime = horaEstimadaFin.toLocalTime();
-                LocalTime horaEstimadaFinActualizada = localTime.plusMinutes(10);
-                Time horaEstimadaFinActualizadaSQL = Time.valueOf(horaEstimadaFinActualizada);
-                pedido.setHoraEstimadaFin(horaEstimadaFinActualizadaSQL);
-                pedidoRepository.save(pedido);
-                PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
-                return pedidoDTO;
-
-
-            }
-            return null;
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
-
-    @Override
-    public PedidoDTO updateEstado(Long id, String estado) throws Exception {
-        try {
-            Optional<Pedido> optionalPedido = pedidoRepository.findById(id);
-            if (optionalPedido.isPresent()) {
-                Pedido pedido = optionalPedido.get();
-                pedido.setEstado(estado.replaceAll("\"", ""));
-                pedidoRepository.save(pedido);
-                PedidoDTO pedidoDTO = mapPedidoToDTO(pedido);
-                return pedidoDTO;
-            }
-            return null;
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
-
-    @Override
-    public void delete(Long id) throws Exception {
-        try {
-            pedidoRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            throw new Exception("Error al cancelar el pedido y restaurar el stock: " + e.getMessage());
         }
     }
 }

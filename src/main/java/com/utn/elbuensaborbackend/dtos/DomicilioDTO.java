@@ -6,8 +6,6 @@ import lombok.Data;
 public class DomicilioDTO extends BaseDTO {
 
     private String calle;
-
     private Integer numero;
-
     private LocalidadDTO localidad;
 }

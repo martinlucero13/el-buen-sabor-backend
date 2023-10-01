@@ -1,12 +1,9 @@
 package com.utn.elbuensaborbackend.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Data
 public class RecetaDTO extends BaseDTO {
-    private Long id;
+
     private String descripcion;
 }

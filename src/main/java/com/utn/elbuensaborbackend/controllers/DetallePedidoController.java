@@ -1,7 +1,7 @@
 package com.utn.elbuensaborbackend.controllers;
 
-
 import com.utn.elbuensaborbackend.dtos.pedido.DetallePedidoDTO;
+import com.utn.elbuensaborbackend.entities.DetallePedido;
 import com.utn.elbuensaborbackend.services.interfaces.DetallePedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,25 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 
-
 @RestController
-@RequestMapping("api/v1/detalle-pedido")
-public class DetallePedidoController{
+@RequestMapping("api/v1/detalles-pedidos")
+public class DetallePedidoController extends BaseControllerImpl<DetallePedido, DetallePedidoDTO> {
 
     @Autowired
     private DetallePedidoService service;
 
-
-    @GetMapping("/byPedido/{id}")
-    public ResponseEntity<?> getByPedidoId(@PathVariable Long id) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(service.findByPedidoId(id));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\": \"Ocurrio un error\"}");
-        }
-    }
     @GetMapping("/pedido/{id}")
     public ResponseEntity<?> getDetallesByPedidoId(@PathVariable Long id) {
         try {
@@ -110,5 +98,3 @@ public class DetallePedidoController{
         }
     }
 }
-
-

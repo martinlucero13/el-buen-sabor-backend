@@ -20,7 +20,7 @@ public class Domicilio extends Base {
     @Column(name = "numero")
     private Integer numero;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "localidad_id")
     private Localidad localidad;
 }

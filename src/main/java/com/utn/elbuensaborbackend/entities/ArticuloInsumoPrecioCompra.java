@@ -1,5 +1,6 @@
 package com.utn.elbuensaborbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,12 +11,9 @@ import java.util.Date;
 
 @Entity
 @Table(name = "articulo_insumo_precio_compra")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @AttributeOverride(name = "id", column = @Column(name = "id_articulo_insumo_precio_compra"))
-public class ArticuloInsumoPrecioCompra extends Base{
+public class ArticuloInsumoPrecioCompra extends Base {
 
     @Column(name = "fecha")
     private Date fecha;
@@ -24,6 +22,7 @@ public class ArticuloInsumoPrecioCompra extends Base{
     private Double monto;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "articulo_insumo_id")
     private ArticuloInsumo articuloInsumo;
 }

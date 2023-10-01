@@ -12,16 +12,12 @@ import java.util.List;
 
 @Repository
 public interface DetallePedidoRepository extends BaseRepository<DetallePedido, Long> {
-
-    @Query(value = "SELECT detalle_pedido.* FROM detalle_pedido " +
-            "WHERE pedido_id = :pedidoId", nativeQuery = true)
-    List<DetallePedido> findByPedidoId(@Param("pedidoId") Long pedidoId);
-
+    List<DetallePedido> findByPedidoId(Long pedidoId);
     @Query("SELECT dp FROM DetallePedido dp " +
             "WHERE dp.pedido.fecha BETWEEN :fechaInicio AND :fechaFin " +
             "AND dp.pedido.estado = 'COMPLETADO'")
     List<DetallePedido> findDetailsBetweenDates(@Param("fechaInicio") Date fechaInicio,
-                                                @Param("fechaFin") Date fechaFin);
+                                                   @Param("fechaFin") Date fechaFin);
     @Query("SELECT dp.articuloManufacturado FROM DetallePedido dp " +
             "WHERE dp.pedido.fecha BETWEEN :fechaInicio " +
             "AND :fechaFin AND dp.pedido.estado = 'COMPLETADO'" +

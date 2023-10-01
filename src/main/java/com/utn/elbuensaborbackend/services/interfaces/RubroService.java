@@ -6,6 +6,9 @@ import com.utn.elbuensaborbackend.entities.Rubro;
 import java.util.List;
 
 public interface RubroService extends BaseService<Rubro, RubroDTO, Long> {
-    List<RubroDTO> findAllParents() throws Exception;
 
+    List<RubroDTO> findAllActivos() throws Exception;
+    List<RubroDTO> findByTipo(Boolean bool) throws Exception;
+    Boolean existsByDenominacion(String denominacion) throws Exception;
+    Rubro updateEstado(Long id) throws Exception;
 }

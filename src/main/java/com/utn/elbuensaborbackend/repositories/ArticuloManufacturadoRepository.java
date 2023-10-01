@@ -9,11 +9,15 @@ import java.util.List;
 
 @Repository
 public interface ArticuloManufacturadoRepository extends BaseRepository<ArticuloManufacturado, Long> {
-    @Query(value = "SELECT am.* FROM articulo_manufacturado am " +
-            "JOIN rubro r " +
-            "ON am.rubro_id = r.id_rubro " +
-            "WHERE am.denominacion LIKE %:termino% " +
-            "OR r.denominacion " +
-            "LIKE %:termino%", nativeQuery = true)
+
+    @Query("SELECT am FROM ArticuloManufacturado am " +
+            "JOIN am.rubro r " +
+            "WHERE (am.denominacion LIKE %:termino% " +
+            "OR r.denominacion LIKE %:termino%) " +
+            "AND am.bloqueado = FALSE")
     List<ArticuloManufacturado> findByTermino(@Param("termino") String termino);
+
+    List<ArticuloManufacturado> findByBloqueadoFalse();
+
+    List<ArticuloManufacturado> findAllByRubro_Id(Long rubroId);
 }

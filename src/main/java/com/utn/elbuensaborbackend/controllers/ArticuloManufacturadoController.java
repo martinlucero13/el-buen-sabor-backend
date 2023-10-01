@@ -1,51 +1,45 @@
 package com.utn.elbuensaborbackend.controllers;
 
-
-import com.utn.elbuensaborbackend.dtos.ArticuloManufacturadoDTO;
+import com.utn.elbuensaborbackend.dtos.ArticuloManufacturadoFullDTO;
+import com.utn.elbuensaborbackend.dtos.pedido.ArticuloCantidadDTO;
 import com.utn.elbuensaborbackend.entities.ArticuloManufacturado;
-import com.utn.elbuensaborbackend.services.ArticuloManufacturadoServiceImpl;
+import com.utn.elbuensaborbackend.services.interfaces.ArticuloManufacturadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/articulos-manufacturados")
-public class ArticuloManufacturadoController {
+public class ArticuloManufacturadoController extends BaseControllerImpl<ArticuloManufacturado, ArticuloManufacturadoFullDTO> {
 
     @Autowired
-    private ArticuloManufacturadoServiceImpl service;
+    private ArticuloManufacturadoService service;
 
-    @GetMapping("")
-    public ResponseEntity<?> getAll() {
+    @GetMapping("/activos")
+    public ResponseEntity<?> getAllActivos() {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(service.findAll());
+                    .body(service.findAllActivos());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los productos por termino\"}");
+                    .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
+    @GetMapping("/simple")
+    public ResponseEntity<?> getAllSimple() {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(service.findById(id));
+                    .body(service.findAllSimple());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los productos por termino\"}");
-        }
-    }
-
-    @GetMapping("withReceta/{id}")
-    public ResponseEntity<?> getWithReceta(@PathVariable Long id) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(service.findWithReceta(id));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los productos por termino\"}");
+                    .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
@@ -56,44 +50,82 @@ public class ArticuloManufacturadoController {
                     .body(service.findByTermino(termino));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("{\"error\":\"Error. No se pudieron recuperar los productos por termino\"}");
+                    .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
-    @PostMapping("")
-    public ResponseEntity<?> save(@RequestBody ArticuloManufacturadoDTO entity) {
+    @GetMapping("/simple/{id}")
+    public ResponseEntity<?> getSimpleById(@PathVariable Long id) {
         try {
-            ArticuloManufacturado articuloManufacturado = service.save(entity);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(service.findSimpleById(id));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Ocurrio un error\"}");
+        }
+    }
+
+    @GetMapping("/enCocina")
+    public ResponseEntity<?> getArticulosEnCocina() {
+        try {
+            List<ArticuloManufacturado> articulosEnCocina = service.findArticulosEnCocina();
+            return ResponseEntity.status(HttpStatus.OK).body(articulosEnCocina);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    @PostMapping("/checkStock")
+    public ResponseEntity<?> checkStockDisponible(@RequestBody List<ArticuloCantidadDTO> articulosCantidad) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(service.findStockDisponible(articulosCantidad));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("{\"error\": \"Ocurrio un error\"}");
+        }
+    }
+
+
+    @PostMapping(value = "/saveFull", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyAuthority('Admin', 'Cocinero')")
+    public ResponseEntity<?> saveFull(
+            @RequestPart("articuloManufacturado") ArticuloManufacturadoFullDTO dto,
+            @RequestParam("file") MultipartFile file) {
+        try {
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(articuloManufacturado);
+                    .body(service.saveFull(dto, file));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\":\"Error al guardar el artículo manufacturado\"}");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ArticuloManufacturadoDTO entity) {
+    @PutMapping(value = "/updateFull/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyAuthority('Admin', 'Cocinero')")
+    public ResponseEntity<?> updateFull(
+            @PathVariable Long id,
+            @RequestPart("articuloManufacturado") ArticuloManufacturadoFullDTO dto,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
-            ArticuloManufacturado articuloManufacturado = service.update(id, entity);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(articuloManufacturado);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(service.updateFull(id, dto, file));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\":\"Error al actualizar el artículo manufacturado\"}");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    @PutMapping("/updateEstado/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Cocinero')")
+    public ResponseEntity<?> updateEstado(@PathVariable Long id) {
         try {
-            service.delete(id);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body("{\"message\":\"Artículo manufacturado eliminado exitosamente\"}");
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(service.updateEstado(id));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\":\"Error al eliminar el artículo manufacturado\"}");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Ocurrio un error\"}");
         }
     }
-
 }

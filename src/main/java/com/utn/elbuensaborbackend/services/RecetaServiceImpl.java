@@ -10,9 +10,6 @@ import com.utn.elbuensaborbackend.services.interfaces.RecetaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
-
 @Service
 public class RecetaServiceImpl extends BaseServiceImpl<Receta, RecetaDTO, Long> implements RecetaService {
 
@@ -28,50 +25,8 @@ public class RecetaServiceImpl extends BaseServiceImpl<Receta, RecetaDTO, Long> 
     @Override
     public RecetaDTO findByArticuloManufacturadoId(Long articuloManufacturadoId) throws Exception {
         try {
-            System.out.println("Entra Find");
-            Receta receta = recetaRepository.findByArticuloManufacturadoId(articuloManufacturadoId);
-            RecetaDTO recetaDTO = new RecetaDTO();
-            if (receta != null) {
-                System.out.println("b");;
-                recetaDTO.setId(receta.getId());
-                recetaDTO.setDescripcion(receta.getDescripcion());
-
-                return recetaDTO;
-            }
-            else{
-                System.out.println("a");;
-                recetaDTO.setId(0L);
-                recetaDTO.setDescripcion("");
-                return recetaDTO;
-            }
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw new Exception(e.getMessage());
-        }
-    }
-
-
-    public Receta saveReceta(Receta dto) throws Exception {
-        try {
-            System.out.println(dto.getArticuloManufacturado().getDenominacion());
-            Receta receta = recetaRepository.save(dto);
-
-            return recetaRepository.save(receta);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
-
-    public void updateReceta(Long aLong, RecetaDTO dto) throws Exception {
-        try {
-            System.out.println("Entra Update");
-            Optional<Receta> receta = recetaRepository.findById(aLong);
-            receta.get().setDescripcion(dto.getDescripcion());
-            System.out.println(receta.get().getDescripcion());
-            System.out.println(receta.get().getId());
-            System.out.println(receta.get().getArticuloManufacturado().getId());
-            recetaRepository.save(receta.get());
+            Receta receta = recetaRepository.findByArticuloManufacturado_Id(articuloManufacturadoId);
+            return recetaMapper.toDTO(receta);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }

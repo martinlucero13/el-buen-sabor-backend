@@ -1,6 +1,6 @@
-package com.utn.elbuensaborbackend.services;
+/*package com.utn.elbuensaborbackend.services;
 
-/*import com.mercadopago.MercadoPagoConfig;
+import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
 import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
